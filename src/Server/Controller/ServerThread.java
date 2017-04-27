@@ -65,6 +65,9 @@ public class ServerThread extends Thread {
          * or the time runs out.
          */
 
+
+        //TODO: Multicast do wszystkich
+
         byte[] buf = new byte [256];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         String name;

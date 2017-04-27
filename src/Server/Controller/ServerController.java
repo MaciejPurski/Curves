@@ -1,6 +1,7 @@
 package Server.Controller;
 
 import Packets.Packet;
+import Server.Model.Model;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -13,17 +14,20 @@ public class ServerController {
 
     private int nPlayers;
     private ServerThread server;
+    private Model model;
     private ConcurrentLinkedDeque<Packet> packetsDeque;
 
     public ServerController(int nPlayers) throws IOException{
         this.nPlayers=nPlayers;
         server = new ServerThread("Server", nPlayers, packetsDeque);
         ConcurrentLinkedDeque<Packet> packetsDeque = new ConcurrentLinkedDeque<Packet> ();
+        model = new Model(nPlayers);
     }
 
     public void start ()
     {
         try {
+
             server.fillUsersList();
             server.start();
             gameLoop();
