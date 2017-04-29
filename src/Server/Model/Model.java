@@ -1,24 +1,17 @@
 package Server.Model;
 
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 /**
  * Created by maciej on 26.04.17.
  */
 public class Model {
-    private final int SIZE_X = 600;
-    private final int SIZE_Y = 600;
-    private BufferedImage map;
+
+    private Map map;
     private int nPlayers;
     private ArrayList<Player> players;
     private boolean gameInProgress;
-    private Graphics2D painter;
 
     public Model(int nPlayers) {
         this.nPlayers = nPlayers;
@@ -28,27 +21,77 @@ public class Model {
             players.add(new Player(i));
         }
 
-        map = new BufferedImage(SIZE_X, SIZE_Y, BufferedImage.TYPE_INT_RGB);
-        painter = map.createGraphics();
-
+        map = new Map ();
     }
 
-    public void update() {
-        //TODO: Collision detection
+    public void init () {
+        map.init();
+        for(Player it : players)
+            it.init();
+    }
+
+    public void startGame() {
+        gameInProgress = true;
         for ( Player it : players) {
-            it.update();
-            Line2D line = new Line2D.Float(new Point2D.Float(it.getOX(), it.getOY()), new Point2D.Float(it.getX(), it.getY()));
-            painter.setColor(new Color(255, 0, 0));
-            /*TODO: different thickness */
-            painter.setStroke( new BasicStroke(6));
-            painter.draw(line);
+            it.setInPlay(true);
         }
     }
 
-    public void testRGB() {
-        System.out.println( map.getRGB(150, 150));
-        ImageIcon ii = new ImageIcon(map);
-        JOptionPane.showMessageDialog(null, ii);
+
+
+    public void update() {
+
+        for ( Player it : players) {
+            if(it.isInPlay()) {
+                it.update();
+            }
+            //TODO : different thickness
+        }
+
+        checkCollisions();
+
+        for (Player it: players) {
+            if(it.isInPlay()) {
+                map.putLine(it.getOX(), it.getOY(), it.getX(), it.getY());
+            }
+        }
     }
+
+
+    private void checkCollisions(){
+        for (Player it : players) {
+            if(it.isInPlay() && (it.getX()<=0 || it.getY() <= 0 || it.getX()>=Map.SIZE_X || it.getY()>=Map.SIZE_Y || !map.isEmpty(it.getX(),it.getY()) )) {//collision detected
+                it.setInPlay(false);
+                System.out.printf("Player number %d is knocked out due to collision (%d, %d)\n", it.getIndex(), it.getX(), it.getY());
+            }
+        }
+    }
+
+    public String toString() {
+        StringBuffer buf = new StringBuffer ( Integer.toString(nPlayers) + " ");
+        if(gameInProgress)
+            buf.append("1 ");
+        else
+            buf.append("0 ");
+
+        for (int i=0; i<nPlayers; i++) {
+            buf.append(Integer.toString(i) + " ");
+            if(players.get(i).isInPlay()) {
+                buf.append("1 ");
+                buf.append(Integer.toString(players.get(i).getX()) + " " + Integer.toString(players.get(i).getY()) + " ");
+            }
+            else
+                buf.append("0 ");
+        }
+
+        return buf.toString();
+    }
+
+
+    public void changeDirection(int playerIndex, Player.Turn nturn) {
+        players.get(playerIndex).setTurn(nturn);
+    }
+
+
 
 }

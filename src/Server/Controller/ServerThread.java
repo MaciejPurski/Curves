@@ -25,16 +25,14 @@ public class ServerThread extends Thread {
     private InetAddress group;
     private int nUsers;
     private final int serverPort = 9876;
-    private ConcurrentLinkedDeque<Packet> packetsDeque;
 
 
 
-    public ServerThread(String name, int nnUsers, ConcurrentLinkedDeque<Packet> packetsDeque) throws IOException {
+    public ServerThread(String name, int nnUsers) throws IOException {
         super(name);
         socket = new DatagramSocket(serverPort);
         users = new LinkedList<User>();
         nUsers=nnUsers;
-        this.packetsDeque = packetsDeque;
         group = InetAddress.getByName("228.5.6.7");
     }
 
@@ -48,7 +46,8 @@ public class ServerThread extends Thread {
             while(true)
             {
                 socket.receive(packet);
-                packetsDeque.add(new Packet(buf.toString()));
+                Packet received = new Packet(buf.toString());
+                users.get(received.getPlayer()).putPacket(received);
             }
 
         } catch (IOException e)
@@ -64,7 +63,6 @@ public class ServerThread extends Thread {
          * Function runs until the user list is filled with the number of users requested in the parameter
          * or the time runs out.
          */
-
 
         //TODO: Multicast do wszystkich
 
@@ -103,6 +101,18 @@ public class ServerThread extends Thread {
             e.printStackTrace();
         }
     }
+
+    public ArrayList<Packet> getPackets() {
+        ArrayList<Packet> result = new ArrayList<Packet> ();
+        for(User it: users) {
+            Packet temp = it.getPacket();
+            if (temp != null)
+                result.add(it.getPacket());
+        }
+        return result;
+    }
+
+
 
 
 

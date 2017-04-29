@@ -1,17 +1,22 @@
 package Packets;
 
+import Server.Model.Player.Turn;
+
 /**
  * Created by maciej on 08.04.17.
  * Class representing moves of a particular player which is sent to the server
  */
-public class Packet {
-    private int player;
-    private enum Event {RIGHT, LEFT, NONE, EXIT};
-    Event event;
 
-    public Packet(int player, Event event){
+//TODO: ujednolicenie pakietów i rozsyłanie różnych informacji
+public class Packet {
+
+
+    private int player;
+    private Turn turn;
+
+    public Packet(int player, Turn event){
         this.player=player;
-        this.event=event;
+        this.turn =event;
     }
 
     public Packet (String string)
@@ -23,9 +28,17 @@ public class Packet {
 
     }
 
+    public int getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(int player) {
+        this.player = player;
+    }
+
     public String toString() {
         StringBuffer result = new StringBuffer(Integer.toString(player));
-        switch (event) {
+        switch (turn) {
             case RIGHT:
                 result.append(" R");
                 break;
@@ -34,9 +47,6 @@ public class Packet {
                 break;
             case NONE:
                 result.append(" N");
-                break;
-            case EXIT:
-                result.append(" X");
                 break;
         }
 
@@ -49,12 +59,15 @@ public class Packet {
         player = Integer.parseInt(tab[0]);
 
         if (tab[1].equals("R"))
-            event = Event.RIGHT;
+            turn = Turn.RIGHT;
         else if (tab[1].equals("L"))
-            event = Event.LEFT;
+            turn = Turn.LEFT;
         else if (tab[1].equals("N"))
-            event = Event.NONE;
-        else if (tab[1].equals("X"))
-            event = Event.EXIT;
+            turn = Turn.NONE;
+
+    }
+
+    public Turn getTurn() {
+        return turn;
     }
 }

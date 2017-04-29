@@ -4,10 +4,11 @@ package Server.Model;
  * Created by maciej on 26.04.17.
  */
 public class Player extends GameObject {
-    private static final int STARTING_X_1 = 200;
-    private static final int STARTING_Y_1 = 200;
-    private static final int STARTING_X_2 = 400;
-    private static final int STARTING_Y_2 = 400;
+    // TODO random start position
+    private static final int STARTING_X_1 = 200; //200
+    private static final int STARTING_Y_1 = 200; //200
+    private static final int STARTING_X_2 = 400; //400
+    private static final int STARTING_Y_2 = 400; //400
     private static final int STARTING_X_3 = 200;
     private static final int STARTING_Y_3 = 400;
     private static final int STARTING_X_4 = 400;
@@ -17,15 +18,21 @@ public class Player extends GameObject {
     private int ox, oy;
     private int speed;
     private Direction dir;
-    boolean isInPlay;
+    private boolean isInPlay;
     private int thickness;
 
     int counter;
-
+    private int index;
     private GameColor color;
     private Turn turn;
 
     public Player(int index) {
+        this.index = index;
+        init();
+
+    }
+
+    public void init() {
         switch (index) {
             case 0:
                 color = GameColor.RED;
@@ -60,6 +67,8 @@ public class Player extends GameObject {
         speed = 5;
         thickness = 1;
         counter = 0;
+        turn = Turn.NONE;
+
     }
 
     public void update() {
@@ -70,7 +79,7 @@ public class Player extends GameObject {
         if (counter>=1) {
             if (turn == Turn.RIGHT)
                 dir.increment();
-            else if (turn == Turn.LEFT) ;
+            else if (turn == Turn.LEFT)
                 dir.decrement();
             counter =0;
         }
@@ -134,4 +143,5 @@ public class Player extends GameObject {
     public int getOY() { return oy; }
 
     public int getOX() { return ox; }
+    public int getIndex() { return index; }
 }
