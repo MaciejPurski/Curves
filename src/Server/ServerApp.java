@@ -1,8 +1,8 @@
-package Server.Controller;
+package Server;
 
 import java.io.IOException;
 import java.util.Scanner;
-
+import Server.Controller.*;
 /**
  * Created by maciej on 22.03.17.
  */

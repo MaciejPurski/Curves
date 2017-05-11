@@ -1,6 +1,6 @@
 package Server.Controller;
 
-import Packets.Packet;
+import Packets.MovePacket;
 import Server.Model.Model;
 
 import java.io.IOException;
@@ -68,9 +68,9 @@ public class ServerController {
     }
 
     public void saveSignals() {
-        ArrayList<Packet> tab = server.getPackets();
+        ArrayList<MovePacket> tab = server.getPackets();
 
-        for(Packet it: tab) {
+        for(MovePacket it: tab) {
             model.changeDirection(it.getPlayer(), it.getTurn());
         }
     }

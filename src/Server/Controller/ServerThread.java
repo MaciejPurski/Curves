@@ -3,12 +3,11 @@ package Server.Controller;
 /**
  * Created by maciej on 22.03.17.
  */
-import Packets.Packet;
+import Packets.MovePacket;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class ServerThread extends Thread {
 
@@ -46,7 +45,7 @@ public class ServerThread extends Thread {
             while(true)
             {
                 socket.receive(packet);
-                Packet received = new Packet(buf.toString());
+                MovePacket received = new MovePacket(buf.toString());
                 users.get(received.getPlayer()).putPacket(received);
             }
 
@@ -102,10 +101,10 @@ public class ServerThread extends Thread {
         }
     }
 
-    public ArrayList<Packet> getPackets() {
-        ArrayList<Packet> result = new ArrayList<Packet> ();
+    public ArrayList<MovePacket> getPackets() {
+        ArrayList<MovePacket> result = new ArrayList<MovePacket> ();
         for(User it: users) {
-            Packet temp = it.getPacket();
+            MovePacket temp = it.getPacket();
             if (temp != null)
                 result.add(it.getPacket());
         }

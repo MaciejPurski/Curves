@@ -62,10 +62,11 @@ public class Model {
         for (Player it : players) {
             if(it.isInPlay() && (it.getX()<=0 || it.getY() <= 0 || it.getX()>=Map.SIZE_X || it.getY()>=Map.SIZE_Y || !map.isEmpty(it.getX(),it.getY()) )) {//collision detected
                 it.setInPlay(false);
-                System.out.printf("Player number %d is knocked out due to collision (%d, %d)\n", it.getIndex(), it.getX(), it.getY());
+                System.out.printf("PlayerStruct number %d is knocked out due to collision (%d, %d)\n", it.getIndex(), it.getX(), it.getY());
             }
         }
     }
+
 
     public String toString() {
         StringBuffer buf = new StringBuffer ( Integer.toString(nPlayers) + " ");
@@ -93,5 +94,27 @@ public class Model {
     }
 
 
+    public int getnPlayers() {
+        return nPlayers;
+    }
 
+    public void setnPlayers(int nPlayers) {
+        this.nPlayers = nPlayers;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
+    }
+
+    public boolean isGameInProgress() {
+        return gameInProgress;
+    }
+
+    public void setGameInProgress(boolean gameInProgress) {
+        this.gameInProgress = gameInProgress;
+    }
 }

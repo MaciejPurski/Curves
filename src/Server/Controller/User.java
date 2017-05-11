@@ -1,5 +1,5 @@
 package Server.Controller;
-import Packets.Packet;
+import Packets.MovePacket;
 
 import java.io.*;
 import java.net.*;
@@ -14,7 +14,7 @@ public class User {
     private int port;
     private String name;
     private InetAddress address;
-    private ConcurrentLinkedDeque<Packet> packetsDeque;
+    private ConcurrentLinkedDeque<MovePacket> packetsDeque;
 
     public User (DatagramSocket nserv, int nport, String nname, InetAddress naddress) {
         server = nserv; //copy reference
@@ -22,7 +22,7 @@ public class User {
         name = nname;
         address = naddress;
         System.out.println("User: " + name + " with address: " + address.toString() + " connected!");
-        packetsDeque = new ConcurrentLinkedDeque<Packet> ();
+        packetsDeque = new ConcurrentLinkedDeque<MovePacket> ();
         try {
             sendData(new String("Connected!\n").getBytes()); }
         catch (IOException e) {
@@ -46,11 +46,11 @@ public class User {
     }
 
 
-    public Packet getPacket() {
+    public MovePacket getPacket() {
         return packetsDeque.poll();
     }
 
-    public void putPacket(Packet elem) {
+    public void putPacket(MovePacket elem) {
         packetsDeque.add(elem);
     }
 
