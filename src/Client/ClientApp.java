@@ -1,19 +1,26 @@
-package Client.Controller;
+package Client;
+
+import Client.Controller.ClientController;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.util.Scanner;
 
 /**
- * Created by maciej on 22.03.17.
+ * Created by maciej on 12.05.17.
  */
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-public class Client {
+public class ClientApp {
     public static void main(String[] args) throws IOException {
 
         /*if (args.length != 1) {
-            System.out.println("Usage: java Client <hostname>");
+            System.out.println("Usage: java ClientController <hostname>");
             return;
         }*/
+        ClientController clientcontroller = new ClientController ();
+        clientcontroller.start();
 
         Scanner in = new Scanner(System.in);
         System.out.println("Choose your name: ");

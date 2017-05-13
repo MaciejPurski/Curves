@@ -13,6 +13,8 @@ public abstract class Packet {
         if ( packet.charAt(0) == 'M') {
             result = new MovePacket (packet);
         }
+        else if (packet.charAt(0) == 'G')
+            result = new GameStatePacket(packet);
         else
             result = null;
         //TODO other types of packets

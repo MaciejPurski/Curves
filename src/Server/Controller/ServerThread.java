@@ -90,6 +90,9 @@ public class ServerThread extends Thread {
     }
 
     public void multicastSend(String message) {
+        /**
+         * Function which sends a message to all users who belong to the mutlicast group
+         */
 
         DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), group, 9877);
         try {
