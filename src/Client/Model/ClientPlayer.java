@@ -7,7 +7,7 @@ import Server.Model.Player;
  *
  */
 public class ClientPlayer {
-
+    private String name;
     private int x;
     private int y;
     private boolean isInPlay;
@@ -51,13 +51,15 @@ public class ClientPlayer {
         isInPlay = false;
     }
 
-    public void init( int x, int y, int thickness, Player.GameColor color) {
-        this.x=x;
-        this.y=y;
-        ox = x;
-        oy = y;
+    public ClientPlayer (int thickness, Player.GameColor color, String name) {
+        init(thickness, color, name);
+    }
+
+    public void init(int thickness, Player.GameColor color, String name) {
+
         this.thickness = thickness;
         this.color = color;
+        this.name=name;
     }
 
     public void setPosition (int x, int y) {

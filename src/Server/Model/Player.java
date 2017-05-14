@@ -5,6 +5,39 @@ package Server.Model;
  */
 public class Player extends GameObject {
     // TODO random start position
+    public enum GameColor {
+        RED(0), GREEN(1), BLUE(2), YELLOW(3);
+        private int value;
+        GameColor(int value) {
+            this.value = value;
+        }
+        public int getValue() {
+            return value;
+        }
+        public static GameColor fromInt(int i) {
+            for (GameColor b : GameColor .values()) {
+                if (b.getValue() == i) { return b; }
+            }
+            return null;
+        }
+    }
+
+    public enum Turn {
+        LEFT(0), RIGHT(1), NONE(2);
+        private int value;
+        Turn(int value) {
+            this.value = value;
+        }
+        public int getValue() {
+            return value;
+        }
+        public static Turn fromInt(int i) {
+            for (Turn b : Turn.values()) {
+                if (b.getValue() == i) { return b; }
+            }
+            return null;
+        }
+    }
     private static final int STARTING_X_1 = 200; //200
     private static final int STARTING_Y_1 = 200; //200
     private static final int STARTING_X_2 = 400; //400
@@ -13,15 +46,14 @@ public class Player extends GameObject {
     private static final int STARTING_Y_3 = 400;
     private static final int STARTING_X_4 = 400;
     private static final int STARTING_Y_4 = 200;
-    public enum GameColor {RED, GREEN, BLUE, YELLOW};
-    public enum Turn {LEFT, RIGHT, NONE};
     private int ox, oy;
     private int speed;
     private Direction dir;
     private boolean isInPlay;
     private int thickness;
+    private String name;
 
-    int counter;
+    private int counter;
     private int index;
     private GameColor color;
     private Turn turn;
@@ -144,4 +176,12 @@ public class Player extends GameObject {
 
     public int getOX() { return ox; }
     public int getIndex() { return index; }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

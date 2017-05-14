@@ -38,18 +38,8 @@ public class MovePacket extends Packet {
 
     public String toString() {
         StringBuffer result = new StringBuffer("M ");
-        result.append(Integer.toString(player));
-        switch (turn) {
-            case RIGHT:
-                result.append(" R");
-                break;
-            case LEFT:
-                result.append(" L");
-                break;
-            case NONE:
-                result.append(" N");
-                break;
-        }
+        result.append(Integer.toString(player) + " ");
+        result.append(turn.getValue()+ " ");
 
         return result.toString();
     }
@@ -58,21 +48,16 @@ public class MovePacket extends Packet {
         //TODO: wyjątki jeśli się nie zgadzają dane
         String [] tab;
         tab = packet.split(" ");
-        player = Integer.parseInt(tab[0]);
+        player = Integer.parseInt(tab[1]);
 
-        if (tab[1].equals("R"))
-            turn = Turn.RIGHT;
-        else if (tab[1].equals("L"))
-            turn = Turn.LEFT;
-        else if (tab[1].equals("N"))
-            turn = Turn.NONE;
+        turn = Turn.fromInt(Integer.parseInt(tab[2]));
 
     }
 
     public Turn getTurn() {
         return turn;
     }
-    //TODO equals
+
     public boolean equals(Object object) {
         MovePacket other = (MovePacket) object;
         if (player != other.player)

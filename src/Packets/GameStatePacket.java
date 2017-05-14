@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class GameStatePacket extends Packet{
 
-    private class PlayerStruct {
+    public class PlayerStruct {
 
         public PlayerStruct() {}
         public boolean isInPlay;
@@ -128,5 +128,27 @@ public class GameStatePacket extends Packet{
     }
 
 
+    public boolean isGameInProgress() {
+        return gameInProgress;
+    }
 
+    public void setGameInProgress(boolean gameInProgress) {
+        this.gameInProgress = gameInProgress;
+    }
+
+    public int getnPlayers() {
+        return nPlayers;
+    }
+
+    public void setnPlayers(int nPlayers) {
+        this.nPlayers = nPlayers;
+    }
+
+    public ArrayList<PlayerStruct> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(ArrayList<PlayerStruct> players) {
+        this.players = players;
+    }
 }

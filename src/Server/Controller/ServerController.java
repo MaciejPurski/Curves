@@ -1,7 +1,11 @@
 package Server.Controller;
 
+import Packets.GameStatePacket;
 import Packets.MovePacket;
+import Packets.Packet;
+import Packets.PlayerPacket;
 import Server.Model.Model;
+import Server.Model.Player;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +32,7 @@ public class ServerController {
     {
         try {
 
-            server.fillUsersList();
+            fillUsersList();
             server.start();
             gameLoop();
         } catch (Exception e)
@@ -55,7 +59,8 @@ public class ServerController {
 
 
                 System.out.println(model.toString());
-                server.multicastSend(model.toString());
+                GameStatePacket toSend = new GameStatePacket(model);
+                server.multicastSend(toSend.toString());
                 model.update();
                 saveSignals();
                 delta--;
@@ -68,10 +73,27 @@ public class ServerController {
     }
 
     public void saveSignals() {
-        ArrayList<MovePacket> tab = server.getPackets();
+        ArrayList<Packet> tab = server.getPackets();
 
-        for(MovePacket it: tab) {
-            model.changeDirection(it.getPlayer(), it.getTurn());
+        for(Packet it: tab) {
+            if (it instanceof MovePacket) {
+                MovePacket received = (MovePacket) it;
+                model.changeDirection(received.getPlayer(), received.getTurn());
+            }
+            //TODO inne pakiety
+
+        }
+    }
+
+    public void fillUsersList() throws IOException{
+        for(int i=0; i<nPlayers; i ++) {
+            String name = server.addUser();
+            model.getPlayers().get(i).setName(name);
+            for (Player it: model.getPlayers()) { // send all players data
+                PlayerPacket packet = new PlayerPacket(it);
+                server.multicastSend(packet.toString());
+                System.out.println(packet.toString());
+            }
         }
     }
 }

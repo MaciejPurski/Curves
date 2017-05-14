@@ -4,6 +4,8 @@ package Server.Controller;
  * Created by maciej on 22.03.17.
  */
 import Packets.MovePacket;
+import Packets.Packet;
+import Packets.SynchronizedQueue;
 
 import java.io.*;
 import java.net.*;
@@ -18,8 +20,7 @@ public class ServerThread extends Thread {
      */
 
 
-
-    private LinkedList<User> users;
+    private SynchronizedQueue queue;
     private DatagramSocket socket;
     private InetAddress group;
     private int nUsers;
@@ -30,14 +31,14 @@ public class ServerThread extends Thread {
     public ServerThread(String name, int nnUsers) throws IOException {
         super(name);
         socket = new DatagramSocket(serverPort);
-        users = new LinkedList<User>();
         nUsers=nnUsers;
         group = InetAddress.getByName("228.5.6.7");
+        queue = new SynchronizedQueue ();
     }
 
 
     public void run() {
-        byte[] buf = new byte [8];
+        byte[] buf = new byte [256];
         //TODO: przerywanie odbioru
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
@@ -45,8 +46,8 @@ public class ServerThread extends Thread {
             while(true)
             {
                 socket.receive(packet);
-                MovePacket received = new MovePacket(buf.toString());
-                users.get(received.getPlayer()).putPacket(received);
+                Packet received = Packet.createPacket(packet.toString());
+                queue.put(received);
             }
 
         } catch (IOException e)
@@ -57,37 +58,23 @@ public class ServerThread extends Thread {
         socket.close();
     }
 
-    public void fillUsersList() throws IOException {
+
+    public String addUser () throws IOException {
         /**
-         * Function runs until the user list is filled with the number of users requested in the parameter
-         * or the time runs out.
+         * Functions which adds one user to the list of users and return the name of the user
          */
-
-        //TODO: Multicast do wszystkich
-
         byte[] buf = new byte [256];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         String name;
+        socket.receive(packet);
+        name = new String (buf, 0, packet.getLength());
 
-        while(users.size() < nUsers) {
+        //TODO packet recognition
 
-            socket.receive(packet);
-            InetAddress address = packet.getAddress(); // reading information on the packet sender
-            int port = packet.getPort();
-            name = new String (buf, 0, packet.getLength());
-
-            boolean found = false;      // find if the packet comes from a new user
-            for (User element : users) {
-                if(address.equals(element.getAddress()))
-                    found = true;
-            }
-
-            if(found == false)
-                users.add(new User(socket, port, name, address));
-
-        }
-
+        return name;
     }
+
+
 
     public void multicastSend(String message) {
         /**
@@ -104,17 +91,9 @@ public class ServerThread extends Thread {
         }
     }
 
-    public ArrayList<MovePacket> getPackets() {
-        ArrayList<MovePacket> result = new ArrayList<MovePacket> ();
-        for(User it: users) {
-            MovePacket temp = it.getPacket();
-            if (temp != null)
-                result.add(it.getPacket());
-        }
-        return result;
+    public ArrayList<Packet> getPackets () {
+        return queue.getPackets();
     }
-
-
 
 
 
