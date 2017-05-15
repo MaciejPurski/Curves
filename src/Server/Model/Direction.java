@@ -30,6 +30,7 @@ public class Direction {
 
     public void increment()
     {
+
         index = (index + 1) % 48;
     }
 
@@ -47,5 +48,7 @@ public class Direction {
     public double getY(){
         return tabSin[index];
     }
+
+    public int getIndex() { return index; }
 
 }

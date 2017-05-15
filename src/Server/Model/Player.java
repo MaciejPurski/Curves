@@ -1,5 +1,9 @@
 package Server.Model;
 
+import static java.lang.Math.PI;
+import static java.lang.StrictMath.cos;
+import static java.lang.StrictMath.sin;
+
 /**
  * Created by maciej on 26.04.17.
  */
@@ -57,6 +61,8 @@ public class Player extends GameObject {
     private int index;
     private GameColor color;
     private Turn turn;
+    private double angle;
+    private double diff;
 
     public Player(int index) {
         this.index = index;
@@ -68,25 +74,25 @@ public class Player extends GameObject {
         switch (index) {
             case 0:
                 color = GameColor.RED;
-                dir=new Direction(0);
+                angle = 0;
                 setX(STARTING_X_1);
                 setY(STARTING_Y_1);
                 break;
             case 1:
-                color = GameColor.GREEN;
-                dir=new Direction(12);
+                color = GameColor.BLUE;
+                angle = PI;
                 setX(STARTING_X_2);
                 setY(STARTING_Y_2);
                 break;
             case 2:
-                color = GameColor.BLUE;
-                dir=new Direction(24);
+                color = GameColor.GREEN;
+                angle = PI/2;
                 setX(STARTING_X_3);
                 setY(STARTING_Y_3);
                 break;
             case 3:
                 color = GameColor.YELLOW;
-                dir=new Direction(36);
+                angle = -PI/2;
                 setX(STARTING_X_4);
                 setY(STARTING_Y_4);
                 break;
@@ -96,10 +102,11 @@ public class Player extends GameObject {
         oy = getY();
 
         isInPlay = false;
-        speed = 3;
+        speed = 4;
         thickness = 1;
         counter = 0;
         turn = Turn.NONE;
+        diff = PI/40;
 
     }
 
@@ -108,18 +115,20 @@ public class Player extends GameObject {
         if (!isInPlay)
             return;
 
-        if (counter>=1) {
+
             if (turn == Turn.RIGHT)
-                dir.increment();
+                angle+=diff;
+                //dir.increment();
             else if (turn == Turn.LEFT)
-                dir.decrement();
-            counter =0;
-        }
+                angle-=diff;
+                //dir.decrement();
+
+
         ox = getX();
         oy = getY();
-        counter++;
+
         //TODO: Zaokrąglanie
-        move((int)(speed*dir.getX()), (int)(speed*dir.getY()));
+        move((int)(speed*cos(angle)), (int)(speed*sin(angle)));
 
     }
 

@@ -6,17 +6,22 @@ package Client.Controller;
 import Client.Model.ClientModel;
 import Client.Model.ClientPlayer;
 import Packets.GameStatePacket;
+import Packets.MovePacket;
 import Packets.Packet;
 import Packets.PlayerPacket;
+import Server.Model.Player;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.*;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
+
 
 public class ClientController extends Thread{
 
@@ -24,6 +29,8 @@ public class ClientController extends Thread{
     private String playerName;
     private ClientThread client;
     private ClientModel model;
+    private boolean isPressedRight;
+    private boolean isPressedLeft;
     @FXML
     private Canvas map;
 
@@ -49,6 +56,35 @@ public class ClientController extends Thread{
         }
 
     }
+
+    @FXML
+    public void onKeyPressed(KeyEvent event) {
+
+        switch (event.getCode()) {
+            case LEFT:
+                if (!isPressedLeft) {
+                    client.sendData(new MovePacket(playerIndex, Player.Turn.LEFT).toString());
+                }
+                break;
+            case RIGHT:
+                if(!isPressedRight){
+                    client.sendData(new MovePacket(playerIndex, Player.Turn.RIGHT).toString());
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    @FXML
+    public void onKeyReleased(KeyEvent event) {
+        isPressedRight = false;
+        isPressedLeft = false;
+
+        client.sendData(new MovePacket(playerIndex, Player.Turn.NONE).toString());
+    }
+
 
 
     public void fillUsersList () throws IOException{
@@ -77,7 +113,7 @@ public class ClientController extends Thread{
 
     public void gameLoop() throws IOException{
         long lastTime = System.nanoTime();
-        final double amountOfTicks = 30.0;
+        final double amountOfTicks = 40.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
         Packet received;
@@ -118,6 +154,7 @@ public class ClientController extends Thread{
     }
 
     public void initMap () {
+
         GraphicsContext gc = map.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.WHITE);
@@ -129,7 +166,22 @@ public class ClientController extends Thread{
 
         GraphicsContext gc = map.getGraphicsContext2D();
         for (ClientPlayer it : model.getPlayers()) {
-            gc.setStroke(Color.BLUE);
+            //TODO więcej kolorów
+            if (it.getColor() == Player.GameColor.BLUE)
+                gc.setStroke(Color.BLUE);
+            else if (it.getColor() == Player.GameColor.RED)
+                gc.setStroke(Color.RED);
+            else if (it.getColor() == Player.GameColor.GREEN)
+                gc.setStroke(Color.GREEN);
+            else
+                gc.setStroke(Color.YELLOW);
+
+            BoxBlur blur = new BoxBlur();
+            blur.setWidth(1);
+            blur.setHeight(1);
+            blur.setIterations(1);
+            gc.setLineCap( StrokeLineCap.ROUND );
+            gc.setLineJoin( StrokeLineJoin.ROUND );
             gc.setLineWidth(5);
             gc.strokeLine(it.getOx(), it.getOy(), it.getX(), it.getOy());
 

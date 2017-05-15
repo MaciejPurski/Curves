@@ -45,9 +45,11 @@ public class ServerThread extends Thread {
         try {
             while(true)
             {
-                socket.receive(packet);
-                Packet received = Packet.createPacket(packet.toString());
+
+                Packet received = receive();
                 queue.put(received);
+                System.out.println(received.toString());
+
             }
 
         } catch (IOException e)
@@ -83,7 +85,7 @@ public class ServerThread extends Thread {
 
         byte [] buf = new byte [256];
         buf = message.getBytes();
-        System.out.println(message);
+
         DatagramPacket packet = new DatagramPacket(buf, buf.length, group, 9877);
         try {
             socket.send(packet);
@@ -97,6 +99,18 @@ public class ServerThread extends Thread {
 
     public ArrayList<Packet> getPackets () {
         return queue.getPackets();
+    }
+
+
+    public Packet receive () throws IOException{
+        byte [] buf = new byte[256];
+        DatagramPacket packet = new DatagramPacket (buf, buf.length);
+        socket.receive(packet);
+        String string = new String(packet.getData());
+
+        Packet received = Packet.createPacket(string);
+
+        return received;
     }
 
 

@@ -57,12 +57,6 @@ public class LoginController {
         System.out.println("done");
         controller.start();
 
-
-
-
-
-
-
     }
 
 

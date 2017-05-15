@@ -44,7 +44,7 @@ public class ServerController {
 
     public void gameLoop() {
         long lastTime = System.nanoTime();
-        final double amountOfTicks = 30.0;
+        final double amountOfTicks = 40.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
 
@@ -56,13 +56,13 @@ public class ServerController {
             delta += (now - lastTime) / ns;
             lastTime = now;
             if (delta >= 1) {
-
-
+                saveSignals();
+                model.update();
 
                 GameStatePacket toSend = new GameStatePacket(model);
                 server.multicastSend(toSend.toString());
-                model.update();
-                saveSignals();
+
+
                 delta--;
             }
 
@@ -92,7 +92,7 @@ public class ServerController {
             for (Player it: model.getPlayers()) { // send all players data
                 PlayerPacket packet = new PlayerPacket(it);
                 server.multicastSend(packet.toString());
-                System.out.println(packet.toString());
+
             }
         }
     }

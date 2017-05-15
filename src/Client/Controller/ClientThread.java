@@ -35,7 +35,7 @@ public class ClientThread extends Thread{
         serverAddress = InetAddress.getByName(ip);
         serverPort = port;
         multicast.joinGroup(InetAddress.getByName("224.0.0.3"));
-        sendData (name.getBytes());
+        sendData (name);
 
 
 
@@ -43,9 +43,17 @@ public class ClientThread extends Thread{
 
     }
 
-    public void sendData(byte [] data) throws IOException{
-        DatagramPacket packet = new DatagramPacket (data, data.length, serverAddress, serverPort);
-        socket.send(packet);
+    public void sendData(String message) {
+        byte [] buf = new byte [256];
+        buf = message.getBytes();
+        System.out.println(message);
+        DatagramPacket packet = new DatagramPacket (buf, buf.length, serverAddress, serverPort);
+        try {
+            socket.send(packet);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Packet receive () throws IOException{
@@ -53,7 +61,7 @@ public class ClientThread extends Thread{
         DatagramPacket packet = new DatagramPacket (buf, buf.length);
         multicast.receive(packet);
         String string = new String(packet.getData());
-        System.out.println(string);
+
         Packet received = Packet.createPacket(string);
 
         return received;
