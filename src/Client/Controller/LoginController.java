@@ -44,10 +44,21 @@ public class LoginController {
 
         Scene home_page_scene = new Scene(root);
         Stage app_stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
         app_stage.setScene(home_page_scene);
+        app_stage.setOnCloseRequest(e-> {
+            app_stage.close();
+            System.out.println("Closed");
+                }
+            );
+        app_stage.setResizable(false);
+        app_stage.centerOnScreen();
         app_stage.show();
         System.out.println("done");
         controller.start();
+
+
+
 
 
 

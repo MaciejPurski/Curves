@@ -32,7 +32,7 @@ public class ServerThread extends Thread {
         super(name);
         socket = new DatagramSocket(serverPort);
         nUsers=nnUsers;
-        group = InetAddress.getByName("228.5.6.7");
+        group = InetAddress.getByName("224.0.0.3");
         queue = new SynchronizedQueue ();
     }
 
@@ -81,9 +81,13 @@ public class ServerThread extends Thread {
          * Function which sends a message to all users who belong to the mutlicast group
          */
 
-        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), group, 9877);
+        byte [] buf = new byte [256];
+        buf = message.getBytes();
+        System.out.println(message);
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, group, 9877);
         try {
             socket.send(packet);
+            //System.out.println(message);
         }
         catch (IOException e)
         {

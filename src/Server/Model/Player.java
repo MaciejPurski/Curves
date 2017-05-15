@@ -96,7 +96,7 @@ public class Player extends GameObject {
         oy = getY();
 
         isInPlay = false;
-        speed = 5;
+        speed = 3;
         thickness = 1;
         counter = 0;
         turn = Turn.NONE;

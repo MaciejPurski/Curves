@@ -15,6 +15,8 @@ public abstract class Packet {
         }
         else if (packet.charAt(0) == 'G')
             result = new GameStatePacket(packet);
+        else if (packet.charAt(0) == 'P')
+            result = new PlayerPacket(packet);
         else
             result = null;
         //TODO other types of packets

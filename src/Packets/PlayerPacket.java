@@ -18,6 +18,9 @@ public class PlayerPacket extends Packet {
         color = player.getColor();
     }
 
+    public PlayerPacket(String string) {
+        parse(string);
+    }
 
     public boolean equals (Object object) {
         PlayerPacket other = (PlayerPacket) object;
