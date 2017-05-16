@@ -58,6 +58,7 @@ public class ClientModel {
         gameInProgress = packet.isGameInProgress();
         for (int i=0; i<nPlayers; i++) {
             players.get(i).setInPlay(packet.getPlayers().get(i).isInPlay);
+            players.get(i).setVisible(packet.getPlayers().get(i).isVisible);
             if (players.get(i).isInPlay()) {
                 players.get(i).setPosition(packet.getPlayers().get(i).x, packet.getPlayers().get(i).y);
             }

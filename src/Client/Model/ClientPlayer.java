@@ -12,6 +12,7 @@ public class ClientPlayer {
     private int y;
     private boolean isInPlay;
     private int thickness;
+    private boolean isVisible;
     private Player.GameColor color;
     private int ox, oy; // old coordinates needed in order to draw the player
 
@@ -78,6 +79,11 @@ public class ClientPlayer {
         this.thickness = thickness;
     }
 
+    public boolean isVisible() {
+        return isVisible;
+    }
 
-
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
 }

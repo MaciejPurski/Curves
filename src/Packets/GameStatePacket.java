@@ -13,7 +13,7 @@ public class GameStatePacket extends Packet{
     public class PlayerStruct {
 
         public PlayerStruct() {}
-        public boolean isInPlay;
+        public boolean isInPlay, isVisible;
         public int x, y;
 
         public boolean equals (Object object) {
@@ -47,6 +47,7 @@ public class GameStatePacket extends Packet{
         for (int i=0; i<model.getPlayers().size(); i++) {
             players.add(new PlayerStruct ());
             players.get(i).isInPlay = model.getPlayers().get(i).isInPlay();
+            players.get(i).isVisible = model.getPlayers().get(i).isVisible();
             players.get(i).x = model.getPlayers().get(i).getX();
             players.get(i).y = model.getPlayers().get(i).getY();
         }
@@ -70,6 +71,14 @@ public class GameStatePacket extends Packet{
             if (tab[index].equals("1")) {
                 players.get(i).isInPlay=true;
                 index++;
+
+                if (tab[index].equals("1"))
+                    players.get(i).isVisible=true;
+                else
+                    players.get(i).isVisible=false;
+
+                index++;
+
 
                 players.get(i).x = Integer.parseInt(tab[index]);
                 index++;
@@ -97,6 +106,11 @@ public class GameStatePacket extends Packet{
             buf.append(Integer.toString(i) + " ");
             if(players.get(i).isInPlay) {
                 buf.append("1 ");
+                if(players.get(i).isVisible)
+                    buf.append("1 ");
+                else
+                    buf.append("0 ");
+
                 buf.append(Integer.toString(players.get(i).x) + " " + Integer.toString(players.get(i).y) + " ");
             }
             else

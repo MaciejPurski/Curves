@@ -5,8 +5,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="800.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controller.ClientController">
+
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity"  prefHeight="800.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controller.ClientController">
    <children>
-      <Canvas fx:id="map" focusTraversable="true" height="800.0" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" width="800.0" />
+      <Canvas fx:id="map" height="800.0" width="800.0" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased"/>
    </children>
 </AnchorPane>

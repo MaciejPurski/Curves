@@ -31,8 +31,10 @@ public class ClientController extends Thread{
     private ClientModel model;
     private boolean isPressedRight;
     private boolean isPressedLeft;
+    private int drawCounter;
     @FXML
     private Canvas map;
+
 
     public ClientController() {
 
@@ -95,6 +97,7 @@ public class ClientController extends Thread{
                 if (player.getIndex() >= model.getnPlayers()) { // if it is a new player
                     model.addPlayer(2, player.getColor(), player.getName());
                     if (player.getName().equals(playerName)) {
+
                         playerIndex = player.getIndex();
                     }
                 }
@@ -113,7 +116,7 @@ public class ClientController extends Thread{
 
     public void gameLoop() throws IOException{
         long lastTime = System.nanoTime();
-        final double amountOfTicks = 40.0;
+        final double amountOfTicks = 30.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
         Packet received;
@@ -154,7 +157,9 @@ public class ClientController extends Thread{
     }
 
     public void initMap () {
+        drawCounter = 0;
 
+        map.setFocusTraversable(true);
         GraphicsContext gc = map.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.WHITE);
@@ -166,25 +171,51 @@ public class ClientController extends Thread{
 
         GraphicsContext gc = map.getGraphicsContext2D();
         for (ClientPlayer it : model.getPlayers()) {
+
             //TODO więcej kolorów
-            if (it.getColor() == Player.GameColor.BLUE)
-                gc.setStroke(Color.BLUE);
-            else if (it.getColor() == Player.GameColor.RED)
-                gc.setStroke(Color.RED);
-            else if (it.getColor() == Player.GameColor.GREEN)
-                gc.setStroke(Color.GREEN);
-            else
-                gc.setStroke(Color.YELLOW);
+            if(it.isVisible()) {
+                drawCounter = 0;
+                if (it.getColor() == Player.GameColor.BLUE) {
+                    gc.setStroke(Color.BLUE);
+                    gc.setFill(Color.BLUE);
+                } else if (it.getColor() == Player.GameColor.RED) {
+                    gc.setStroke(Color.RED);
+                    gc.setFill(Color.RED);
+                } else if (it.getColor() == Player.GameColor.GREEN) {
+                    gc.setStroke(Color.GREEN);
+                    gc.setFill(Color.GREEN);
+                } else {
+                    gc.setStroke(Color.YELLOW);
+                    gc.setFill(Color.YELLOW);
+                }
 
-            BoxBlur blur = new BoxBlur();
-            blur.setWidth(1);
-            blur.setHeight(1);
-            blur.setIterations(1);
-            gc.setLineCap( StrokeLineCap.ROUND );
-            gc.setLineJoin( StrokeLineJoin.ROUND );
-            gc.setLineWidth(5);
-            gc.strokeLine(it.getOx(), it.getOy(), it.getX(), it.getOy());
 
+
+
+                gc.setLineCap(StrokeLineCap.ROUND);
+                gc.setLineJoin(StrokeLineJoin.BEVEL);
+                gc.setLineWidth(8);
+                gc.strokeLine(it.getOx(), it.getOy(), it.getX(), it.getOy());
+            }
+                else {
+
+                if (drawCounter>=1) {
+                    gc.setFill(Color.BLACK);
+                    gc.fillRect(it.getOx(), it.getOy(), 2, 2);
+
+                }
+                    else
+                {
+                    gc.fillRect(it.getOx(), it.getOy(), 2, 2);
+                    gc.fillRect(it.getX(), it.getY(), 2, 2);
+                }
+
+
+
+                drawCounter ++;
+            }
+            gc.setFill(Color.YELLOW);
+            gc.fillRect(it.getX(), it.getY(), 2, 2);
         }
     }
 }

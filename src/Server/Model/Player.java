@@ -56,6 +56,7 @@ public class Player extends GameObject {
     private boolean isInPlay;
     private int thickness;
     private String name;
+    private boolean isVisible;
 
     private int counter;
     private int index;
@@ -102,19 +103,33 @@ public class Player extends GameObject {
         oy = getY();
 
         isInPlay = false;
-        speed = 4;
+        speed = 5;
         thickness = 1;
         counter = 0;
         turn = Turn.NONE;
-        diff = PI/40;
+        diff = 0.1;
+        isVisible=true;
+        counter=0;
 
     }
 
     public void update() {
 
+
+        if(counter>10 && !isVisible) {
+            counter =0;
+            System.out.println("VISIBLE");
+            isVisible = true;
+        }
+
+        if(counter>50 && isVisible) {
+            counter =0;
+            isVisible = false;
+            System.out.println("INVISIBLE");
+        }
+
         if (!isInPlay)
             return;
-
 
             if (turn == Turn.RIGHT)
                 angle+=diff;
@@ -123,12 +138,12 @@ public class Player extends GameObject {
                 angle-=diff;
                 //dir.decrement();
 
-
+        System.out.println(angle);
         ox = getX();
         oy = getY();
-
+        counter ++;
         //TODO: Zaokrąglanie
-        move((int)(speed*cos(angle)), (int)(speed*sin(angle)));
+        move((int)Math.round((speed*cos(angle))), (int)(Math.round(speed*sin(angle))));
 
     }
 
@@ -192,5 +207,13 @@ public class Player extends GameObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 }
