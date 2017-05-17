@@ -34,13 +34,12 @@ public class LoginController {
         //TODO porządek i zmiana nazw oraz idiotoodporność
         System.out.println("IpAddress: " + ipAddress.getText() + " port: "
                 + port.getText() + " name: " + name.getText());
-        client.connect(ipAddress.getText(), Integer.parseInt(port.getText()), name.getText());
+        int index = client.connect(ipAddress.getText(), Integer.parseInt(port.getText()), name.getText());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../Game.fxml"));
         Parent root = loader.load();
         ClientController controller = loader.getController();
         controller.init(client, model);
-        controller.setPlayer(name.getText());
 
         Scene home_page_scene = new Scene(root);
         Stage app_stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -49,12 +48,15 @@ public class LoginController {
         app_stage.setOnCloseRequest(e-> {
             app_stage.close();
             System.out.println("Closed");
+            controller.interrupt();
                 }
             );
         app_stage.setResizable(false);
         app_stage.centerOnScreen();
         app_stage.show();
         System.out.println("done");
+        controller.fillUsersList();
+
         controller.start();
 
     }

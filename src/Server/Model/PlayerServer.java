@@ -1,6 +1,8 @@
 package Server.Model;
 
-import javafx.scene.paint.Color;
+import Client.Model.Player;
+
+import java.util.Random;
 
 import static java.lang.Math.PI;
 import static java.lang.StrictMath.cos;
@@ -9,147 +11,83 @@ import static java.lang.StrictMath.sin;
 /**
  * Created by maciej on 26.04.17.
  */
-public class Player extends GameObject {
+public class PlayerServer extends Player {
 
 
-
-    public enum Turn {
-        LEFT(0), RIGHT(1), NONE(2);
-        private int value;
-        Turn(int value) {
-            this.value = value;
-        }
-        public int getValue() {
-            return value;
-        }
-        public static Turn fromInt(int i) {
-            for (Turn b : Turn.values()) {
-                if (b.getValue() == i) { return b; }
-            }
-            return null;
-        }
-    }
-    private static final int STARTING_X_1 = 200; //200
-    private static final int STARTING_Y_1 = 200; //200
-    private static final int STARTING_X_2 = 400; //400
-    private static final int STARTING_Y_2 = 400; //400
-    private static final int STARTING_X_3 = 200;
-    private static final int STARTING_Y_3 = 400;
-    private static final int STARTING_X_4 = 400;
-    private static final int STARTING_Y_4 = 200;
-    private int ox, oy;
     private int speed;
-
-    private boolean isInPlay;
-    private int thickness;
-    private String name;
-    private boolean isVisible;
-
     private int counter;
-    private int index;
-    private GameColor color;
+
     private Turn turn;
     private double angle;
     private double diff;
 
-    public Player(int index) {
-        this.index = index;
-        init();
-
+    public PlayerServer(GameColor color, String name) {
+        super(color, name);
     }
+    /**
+     * Method sets starting values of the player with random numbers
+     *
+     */
 
     public void init() {
-        switch (index) {
-            case 0:
-                color = GameColor.RED;
-                angle = 0;
-                setX(STARTING_X_1);
-                setY(STARTING_Y_1);
-                break;
-            case 1:
-                color = GameColor.BLUE;
-                angle = PI;
-                setX(STARTING_X_2);
-                setY(STARTING_Y_2);
-                break;
-            case 2:
-                color = GameColor.GREEN;
-                angle = PI/2;
-                setX(STARTING_X_3);
-                setY(STARTING_Y_3);
-                break;
-            case 3:
-                color = GameColor.YELLOW;
-                angle = -PI/2;
-                setX(STARTING_X_4);
-                setY(STARTING_Y_4);
-                break;
-        }
+        Random generator = new Random();
+        int x = generator.nextInt(400) + 200;
+        int y = generator.nextInt(400) + 200;
+        angle = generator.nextDouble()*2*PI;
 
-        ox = getX();
-        oy = getY();
+        super.init(x,y);
+        angle = Math.random() * 2*PI;
 
-        isInPlay = false;
+
         speed = 5;
-        thickness = 1;
         counter = 0;
         turn = Turn.NONE;
         diff = 0.1;
-        isVisible=true;
-        counter=0;
-
     }
+
+
+    /**
+     * Method used to count new position of the player depending on its turn and current angle
+     */
 
     public void update() {
 
-
-        if(counter>10 && !isVisible) {
-            counter =0;
-            isVisible = true;
-        }
-
-        if(counter>50 && isVisible) {
-            counter =0;
-            isVisible = false;
-        }
-
-        if (!isInPlay)
+        if (!isInPlay())
             return;
 
-            if (turn == Turn.RIGHT)
-                angle+=diff;
-                //dir.increment();
-            else if (turn == Turn.LEFT)
-                angle-=diff;
-                //dir.decrement();
+        updateVisible();
+        updateAngle();
 
-        ox = getX();
-        oy = getY();
-        counter ++;
-        //TODO: Zaokrąglanie
+
         move((int)Math.round((speed*cos(angle))), (int)(Math.round(speed*sin(angle))));
 
     }
 
+    /**
+     * It is used to determine if the curve should be drawn or not.
+     */
+    private void updateVisible() {
+        if(counter>10 && !isVisible()) {
+            counter =0;
+            setVisible(true);
+        }
 
+        if(counter>50 && isVisible()) {
+            counter =0;
+            setVisible(false);
+        }
 
-    public boolean isInPlay() {
-        return isInPlay;
+        counter ++;
     }
 
-    public void setInPlay(boolean inPlay) {
-        isInPlay = inPlay;
+    private void updateAngle() {
+        if (turn == Turn.RIGHT)
+            angle+=diff;
+        else if (turn == Turn.LEFT)
+            angle-=diff;
     }
 
 
-
-    public GameColor getColor() {
-        return color;
-    }
-
-    public void setColor(GameColor color) {
-        this.color = color;
-    }
 
     public Turn getTurn() {
         return turn;
@@ -161,24 +99,4 @@ public class Player extends GameObject {
 
 
 
-    public int getOY() { return oy; }
-
-    public int getOX() { return ox; }
-    public int getIndex() { return index; }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isVisible() {
-        return isVisible;
-    }
-
-    public void setVisible(boolean visible) {
-        isVisible = visible;
-    }
 }

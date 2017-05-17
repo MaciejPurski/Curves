@@ -26,9 +26,9 @@ public class Map {
     }
 
     public void putLine(float x1, float y1, float x2, float y2) {
+
         Line2D line = new Line2D.Float(new Point2D.Float(x1, y1), new Point2D.Float(x2, y2));
         painter.setColor(new Color(255, 0, 0));
-            /*TODO: different thickness */
         painter.setStroke( new BasicStroke(8));
         painter.draw(line);
     }

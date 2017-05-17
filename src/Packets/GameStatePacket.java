@@ -1,7 +1,6 @@
 package Packets;
 
 import Server.Model.Model;
-import Server.Model.Player;
 
 import java.util.ArrayList;
 
@@ -41,7 +40,7 @@ public class GameStatePacket extends Packet{
 
     public GameStatePacket(Model model) {
         players = new ArrayList<PlayerStruct> ();
-        nPlayers = model.getnPlayers();
+        nPlayers = model.getPlayers().size();
 
         gameInProgress = model.isGameInProgress();
         for (int i=0; i<model.getPlayers().size(); i++) {

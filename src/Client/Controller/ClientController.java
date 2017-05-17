@@ -4,18 +4,21 @@ package Client.Controller;
  * Created by maciej on 22.03.17.
  */
 import Client.Model.ClientModel;
-import Client.Model.ClientPlayer;
+import Client.Model.Player;
 import Packets.GameStatePacket;
 import Packets.MovePacket;
 import Packets.Packet;
 import Packets.PlayerPacket;
-import Server.Model.Player;
+import Server.Model.PlayerServer;
+import Server.Model.Turn;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.effect.BoxBlur;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.*;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 
@@ -26,7 +29,6 @@ import java.io.*;
 public class ClientController extends Thread{
 
     private int playerIndex;
-    private String playerName;
     private ClientThread client;
     private ClientModel model;
     private boolean isPressedRight;
@@ -34,7 +36,12 @@ public class ClientController extends Thread{
     private int drawCounter;
     @FXML
     private Canvas map;
-
+    @FXML
+    private VBox playersList;
+    @FXML
+    private Label text1,text2,text3,text4;
+    @FXML
+    private Circle circle1, circle2, circle3, circle4;
 
     public ClientController() {
 
@@ -48,11 +55,13 @@ public class ClientController extends Thread{
 
     public void run() {
         try {
-            System.out.println("Entered");
-            fillUsersList();
+
             initMap();
             while (true) {
                 gameLoop();
+                if (Thread.currentThread().isInterrupted()) {
+                    break;
+                }
             }
         }
         catch (Exception e) {
@@ -67,13 +76,13 @@ public class ClientController extends Thread{
         switch (event.getCode()) {
             case LEFT:
                 if (!isPressedLeft && !isPressedRight) {
-                    client.sendData(new MovePacket(playerIndex, Player.Turn.LEFT).toString());
+                    client.sendData(new MovePacket(playerIndex, Turn.LEFT).toString());
                     isPressedLeft = true;
                 }
                 break;
             case RIGHT:
                 if(!isPressedRight && !isPressedLeft){
-                    client.sendData(new MovePacket(playerIndex, Player.Turn.RIGHT).toString());
+                    client.sendData(new MovePacket(playerIndex, Turn.RIGHT).toString());
                     isPressedRight = true;
                 }
                 break;
@@ -88,28 +97,25 @@ public class ClientController extends Thread{
         isPressedRight = false;
         isPressedLeft = false;
 
-        client.sendData(new MovePacket(playerIndex, Player.Turn.NONE).toString());
+        client.sendData(new MovePacket(playerIndex, Turn.NONE).toString());
     }
 
 
 
     public void fillUsersList () throws IOException{
+        //TODO sortowanie
         while (true) {
-            Packet received = client.receive();
+            Packet received = client.receiveMulticast();
             if (received instanceof PlayerPacket) { //information on new player
                 PlayerPacket player = (PlayerPacket) received;
-                if (player.getIndex() >= model.getnPlayers()) { // if it is a new player
-                    model.addPlayer(2, player.getColor(), player.getName());
-                    if (player.getName().equals(playerName)) {
 
-                        playerIndex = player.getIndex();
-                    }
-                }
+                    model.addPlayer(player.getColor(), player.getName());
             }
             else if (received instanceof GameStatePacket) {
                 GameStatePacket gameState = (GameStatePacket) received;
 
                 model.update(gameState);
+                showPlayers();
 
                 return;
             }
@@ -130,7 +136,7 @@ public class ClientController extends Thread{
 
         long timer = System.currentTimeMillis();
 
-        received = client.receive();
+        received = client.receiveMulticast();
         gameState = (GameStatePacket) received;
         initMap();
         model.update(gameState);
@@ -144,7 +150,7 @@ public class ClientController extends Thread{
             if (delta >= 1) {
 
 
-                received = client.receive();
+                received = client.receiveMulticast();
 
                 if (received instanceof GameStatePacket) {
                     gameState = (GameStatePacket) received;
@@ -158,13 +164,17 @@ public class ClientController extends Thread{
             if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
             }
+
+            if (Thread.currentThread().isInterrupted()) {
+                break;
+            }
         }
     }
 
 
 
-    public void setPlayer(String string) {
-        playerName = string;
+    public void setPlayer(int index) {
+        playerIndex = index;
     }
 
     public void initMap () {
@@ -181,21 +191,10 @@ public class ClientController extends Thread{
     public void drawModel() {
 
         GraphicsContext gc = map.getGraphicsContext2D();
-        for (ClientPlayer it : model.getPlayers()) {
-            Color playerColor;
-
-            if (it.getColor() == Player.GameColor.BLUE)
-                playerColor = Color.BLUE;
-             else if (it.getColor() == Player.GameColor.RED)
-                playerColor = Color.RED;
-             else if (it.getColor() == Player.GameColor.GREEN)
-                playerColor = Color.GREEN;
-             else
-                playerColor = Color.YELLOW;
+        for (Player it : model.getPlayers()) {
+            Color playerColor = it.getColor().toColor();
 
 
-
-            //TODO więcej kolorów
             if(it.isVisible()) {
                 drawCounter = 0;
 
@@ -226,6 +225,33 @@ public class ClientController extends Thread{
             }
             gc.setFill(Color.YELLOW);
             gc.fillRect(it.getX(), it.getY(), 2, 2);
+        }
+    }
+
+    private void showPlayers() {
+        for (int i=0; i<model.getPlayers().size(); i++) {
+            switch (i) {
+                case 0:
+                    text1.setText(model.getPlayers().get(i).getName());
+                    circle1.setFill(model.getPlayers().get(i).getColor().toColor());
+                    circle1.setVisible(true);
+                    break;
+                case 1:
+                    text2.setText(model.getPlayers().get(i).getName());
+                    circle2.setFill(model.getPlayers().get(i).getColor().toColor());
+                    circle2.setVisible(true);
+                    break;
+                case 2:
+                    text3.setText(model.getPlayers().get(i).getName());
+                    circle3.setFill(model.getPlayers().get(i).getColor().toColor());
+                    circle3.setVisible(true);
+                    break;
+                case 3:
+                    text4.setText(model.getPlayers().get(i).getName());
+                    circle4.setFill(model.getPlayers().get(i).getColor().toColor());
+                    circle4.setVisible(true);
+                    break;
+            }
         }
     }
 }

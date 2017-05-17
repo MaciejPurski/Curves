@@ -1,12 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.canvas.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="900.0" prefWidth="1200.0" style="-fx-background-color: rgb(180,180,180);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controller.ClientController">
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="900.0" prefWidth="1200.0" style="-fx-background-color: rgb(120,120,120);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controller.ClientController">
    <children>
       <Canvas fx:id="map" height="800.0" layoutX="50.0" layoutY="50.0" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" style="-fx-border-width: 10; -fx-border-style: solid; -fx-border-color: rgb(255,255,255); -fx-border-insets: 5;" width="800.0" />
+      <VBox fx:id="playersList" layoutX="894.0" layoutY="8.0" prefHeight="500.0" prefWidth="234.0">
+         <children>
+            <Label fx:id="text1" prefHeight="125.0" prefWidth="295.0" textFill="WHITE">
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="FreeMono Bold" size="40.0" />
+               </font>
+            </Label>
+            <Label fx:id="text2" layoutX="60.0" layoutY="10.0" prefHeight="125.0" prefWidth="295.0" textFill="WHITE">
+               <font>
+                  <Font name="FreeMono Bold" size="40.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="text3" layoutX="60.0" layoutY="135.0" prefHeight="125.0" prefWidth="295.0" textFill="WHITE">
+               <font>
+                  <Font name="FreeMono Bold" size="40.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="text4" layoutX="60.0" layoutY="260.0" prefHeight="125.0" prefWidth="295.0" textFill="WHITE">
+               <font>
+                  <Font name="FreeMono Bold" size="40.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+         </children>
+      </VBox>
+      <VBox layoutX="1132.0" layoutY="8.0" prefHeight="500.0" prefWidth="68.0" spacing="90.0">
+         <children>
+            <Circle fx:id="circle1" fill="DODGERBLUE" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false">
+               <VBox.margin>
+                  <Insets top="30.0" />
+               </VBox.margin>
+            </Circle>
+            <Circle fx:id="circle2" fill="DODGERBLUE" layoutX="27.0" layoutY="27.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+            <Circle fx:id="circle3" fill="DODGERBLUE" layoutX="27.0" layoutY="61.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+            <Circle fx:id="circle4" fill="DODGERBLUE" layoutX="27.0" layoutY="95.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+         </children>
+         <padding>
+            <Insets top="15.0" />
+         </padding>
+      </VBox>
    </children>
 </AnchorPane>

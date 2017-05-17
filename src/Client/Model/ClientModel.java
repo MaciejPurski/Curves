@@ -1,8 +1,7 @@
 package Client.Model;
-import Client.ClientApp;
 import Packets.GameStatePacket;
-import Server.Model.GameObject;
-import Server.Model.Player;
+import Server.Model.GameColor;
+import Server.Model.PlayerServer;
 
 import java.util.ArrayList;
 
@@ -14,27 +13,20 @@ public class ClientModel {
 
 
     private int nPlayers;
-    private ArrayList<ClientPlayer> players;
+    private ArrayList<Player> players;
     private boolean gameInProgress;
 
     public ClientModel () {
         nPlayers=0;
-        players = new ArrayList<ClientPlayer> ();
+        players = new ArrayList<Player> ();
         gameInProgress = false;
     }
 
-    public void startGame() {
-        gameInProgress = true;
-    }
 
-    public void updatePlayer (int index, int x, int y, boolean isInPlay) {
-        players.get(index).setPosition(x, y);
-        players.get(index).setInPlay(isInPlay);
-    }
 
-    public void addPlayer(int thickness, Player.GameColor color, String name) {
+    public void addPlayer(GameColor color, String name) {
         nPlayers++;
-        players.add(new ClientPlayer (thickness, color, name));
+        players.add(new Player(color, name));
 
     }
     /**
@@ -42,8 +34,8 @@ public class ClientModel {
      */
 
     public void initPlayers() {
-        for(ClientPlayer it: players)
-            it.setStartingPosition();
+        for(Player it: players)
+            it.init(it.getX(), it.getY());
 
     }
 
@@ -67,11 +59,11 @@ public class ClientModel {
         this.nPlayers = nPlayers;
     }
 
-    public ArrayList<ClientPlayer> getPlayers() {
+    public ArrayList<Player> getPlayers() {
         return players;
     }
 
-    public void setPlayers(ArrayList<ClientPlayer> players) {
+    public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
 

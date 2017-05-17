@@ -16,7 +16,8 @@ public class ServerThread extends Thread {
 
     /**
      *    @param socket Main server socket
-     *    @param users list of all users connected to the server
+     *    @param queue contains all packets which are ready to read
+     *    @param group address of the multicast group
      */
 
 
@@ -25,6 +26,7 @@ public class ServerThread extends Thread {
     private InetAddress group;
     private int nUsers;
     private final int serverPort = 9876;
+    private boolean isServerOn;
 
 
 
@@ -34,22 +36,21 @@ public class ServerThread extends Thread {
         nUsers=nnUsers;
         group = InetAddress.getByName("224.0.0.3");
         queue = new SynchronizedQueue ();
+        isServerOn = true;
     }
 
+    /**
+     * In this method packets get received and put on the queue
+     */
 
     public void run() {
-        byte[] buf = new byte [256];
-        //TODO: przerywanie odbioru
-        DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
         try {
-            while(true)
+            while(isServerOn)
             {
-
                 Packet received = receive();
                 queue.put(received);
                 System.out.println(received.toString());
-
             }
 
         } catch (IOException e)
@@ -60,16 +61,26 @@ public class ServerThread extends Thread {
         socket.close();
     }
 
+    /**
+     * Functions which adds one user to the list of users and return the name of the user. It resends player index
+     */
 
-    public String addUser () throws IOException {
-        /**
-         * Functions which adds one user to the list of users and return the name of the user
-         */
+    public String addUser (int index) throws IOException {
+
         byte[] buf = new byte [256];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         String name;
         socket.receive(packet);
         name = new String (buf, 0, packet.getLength());
+
+        //resend index
+        InetAddress address = packet.getAddress();
+        int port = packet.getPort();
+        buf = Integer.toString(index).getBytes();
+
+        packet = new DatagramPacket(buf, 1, address, port);
+        socket.send(packet);
+
 
         //TODO packet recognition
 
@@ -89,7 +100,6 @@ public class ServerThread extends Thread {
         DatagramPacket packet = new DatagramPacket(buf, buf.length, group, 9877);
         try {
             socket.send(packet);
-            //System.out.println(message);
         }
         catch (IOException e)
         {
@@ -113,6 +123,10 @@ public class ServerThread extends Thread {
         return received;
     }
 
+
+    public void setServerOn(boolean arg) {
+        isServerOn = arg;
+    }
 
 
 }

@@ -4,8 +4,9 @@ import Packets.GameStatePacket;
 import Packets.MovePacket;
 import Packets.Packet;
 import Packets.PlayerPacket;
+import Server.Model.GameColor;
 import Server.Model.Model;
-import Server.Model.Player;
+import Server.Model.PlayerServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,14 +28,14 @@ public class ServerController {
     public ServerController(int nPlayers) throws IOException{
         this.nPlayers=nPlayers;
         server = new ServerThread("Server", nPlayers);
-        model = new Model(nPlayers);
+        model = new Model();
     }
 
     public void start ()
     {
         try {
-
             fillUsersList();
+            sendPlayersInfo();
             server.start();
             while (true) {
                 gameLoop();
@@ -54,13 +55,13 @@ public class ServerController {
 
 
         model.init();
-        model.startGame();
-
         //first packet
 
         GameStatePacket toSend = new GameStatePacket(model);
         server.multicastSend(toSend.toString());
+
         sleep(3000);
+
         long lastTime = System.nanoTime();
         long timer = System.currentTimeMillis();
 
@@ -101,16 +102,30 @@ public class ServerController {
         }
     }
 
-    public void fillUsersList() throws IOException{
-        for(int i=0; i<nPlayers; i ++) {
-            String name = server.addUser();
-            model.getPlayers().get(i).setName(name);
-            for (Player it: model.getPlayers()) { // send all players data
-                PlayerPacket packet = new PlayerPacket(it);
-                System.out.println(packet.toString());
-                server.multicastSend(packet.toString());
+    /**
+     * Method called when the server is started. It waits for players to log in. The number of players is specified when the server is started
+     * @throws IOException
+     */
 
-            }
+    private void fillUsersList() throws IOException{
+        for(int i=0; i<nPlayers; i ++) {
+
+            String name = server.addUser(i);
+            model.addPlayer(GameColor.fromInt(i), name);
+
+        }
+    }
+
+    /**
+     * Method sends to all the players info on other players
+     */
+
+    private void sendPlayersInfo() throws Exception{
+        for (int i=0; i<model.getPlayers().size() ; i++) { // send all players data
+            PlayerPacket packet = new PlayerPacket(model.getPlayers().get(i), i);
+            System.out.println(packet.toString());
+            server.multicastSend(packet.toString());
+            sleep(500);
         }
     }
 }

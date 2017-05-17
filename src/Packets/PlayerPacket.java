@@ -1,7 +1,8 @@
 package Packets;
 
 
-import Server.Model.Player;
+import Server.Model.GameColor;
+import Server.Model.PlayerServer;
 
 /**
  * Created by maciej on 12.05.17.
@@ -10,10 +11,10 @@ public class PlayerPacket extends Packet {
 
     private int index;
     private String name;
-    private Player.GameColor color;
+    private GameColor color;
 
-    public PlayerPacket(Player player) {
-        index = player.getIndex();
+    public PlayerPacket(PlayerServer player, int index) {
+        this.index = index;
         name = player.getName();
         color = player.getColor();
     }
@@ -36,7 +37,7 @@ public class PlayerPacket extends Packet {
     }
 
     public String toString () {
-        //TODO color
+
         StringBuffer result = new StringBuffer("P ");
         result.append(Integer.toString(index) + " ");
         result.append(Integer.toString(color.getValue()) + " ");
@@ -50,9 +51,8 @@ public class PlayerPacket extends Packet {
         String [] tab;
         tab = string.split(" ");
         index = Integer.parseInt(tab[1]);
-        color = Player.GameColor.fromInt(Integer.parseInt(tab[2]));
+        color = GameColor.fromInt(Integer.parseInt(tab[2]));
         name = tab[3];
-
 
     }
 
@@ -73,11 +73,11 @@ public class PlayerPacket extends Packet {
         this.name = name;
     }
 
-    public Player.GameColor getColor() {
+    public GameColor getColor() {
         return color;
     }
 
-    public void setColor(Player.GameColor color) {
+    public void setColor(GameColor color) {
         this.color = color;
     }
 

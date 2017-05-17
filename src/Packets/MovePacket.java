@@ -1,6 +1,7 @@
 package Packets;
 
-import Server.Model.Player.Turn;
+
+import Server.Model.Turn;
 
 /**
  * Created by maciej on 08.04.17.
