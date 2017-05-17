@@ -1,5 +1,7 @@
 package Server.Model;
 
+import javafx.scene.paint.Color;
+
 import static java.lang.Math.PI;
 import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.sin;
@@ -8,23 +10,8 @@ import static java.lang.StrictMath.sin;
  * Created by maciej on 26.04.17.
  */
 public class Player extends GameObject {
-    // TODO random start position
-    public enum GameColor {
-        RED(0), GREEN(1), BLUE(2), YELLOW(3);
-        private int value;
-        GameColor(int value) {
-            this.value = value;
-        }
-        public int getValue() {
-            return value;
-        }
-        public static GameColor fromInt(int i) {
-            for (GameColor b : GameColor .values()) {
-                if (b.getValue() == i) { return b; }
-            }
-            return null;
-        }
-    }
+
+
 
     public enum Turn {
         LEFT(0), RIGHT(1), NONE(2);
@@ -52,7 +39,7 @@ public class Player extends GameObject {
     private static final int STARTING_Y_4 = 200;
     private int ox, oy;
     private int speed;
-    private Direction dir;
+
     private boolean isInPlay;
     private int thickness;
     private String name;
@@ -144,13 +131,7 @@ public class Player extends GameObject {
 
     }
 
-    public Direction getDir() {
-        return dir;
-    }
 
-    public void setDir(Direction dir) {
-        this.dir = dir;
-    }
 
     public boolean isInPlay() {
         return isInPlay;
@@ -160,13 +141,7 @@ public class Player extends GameObject {
         isInPlay = inPlay;
     }
 
-    public int getThickness() {
-        return thickness;
-    }
 
-    public void setThickness(int thickness) {
-        this.thickness = thickness;
-    }
 
     public GameColor getColor() {
         return color;
@@ -184,14 +159,7 @@ public class Player extends GameObject {
         this.turn = turn;
     }
 
-    public int getSpeed() {
 
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
 
     public int getOY() { return oy; }
 
