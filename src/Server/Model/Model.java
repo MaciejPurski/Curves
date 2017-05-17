@@ -26,8 +26,9 @@ public class Model {
 
     public void init () {
         map.init();
-        for(Player it : players)
+        for(Player it : players) {
             it.init();
+        }
     }
 
     public void startGame() {
@@ -51,10 +52,21 @@ public class Model {
         checkCollisions();
 
         for (Player it: players) {
-            if(it.isInPlay()) {
+            if(it.isInPlay() && it.isVisible()) {
                 map.putLine(it.getOX(), it.getOY(), it.getX(), it.getY());
             }
         }
+
+        // check if game is in progress
+        int counter = 0;
+        for (Player it: players) {
+            if (it.isInPlay())
+                counter++;
+        }
+
+        if (counter == 0)
+            gameInProgress = false;
+
     }
 
 

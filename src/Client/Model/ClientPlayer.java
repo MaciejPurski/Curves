@@ -86,4 +86,9 @@ public class ClientPlayer {
     public void setVisible(boolean visible) {
         isVisible = visible;
     }
+
+    public void setStartingPosition() {
+        ox = x;
+        oy = y;
+    }
 }

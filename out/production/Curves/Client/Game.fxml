@@ -5,9 +5,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity"  prefHeight="800.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controller.ClientController">
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="900.0" prefWidth="1200.0" style="-fx-background-color: rgb(180,180,180);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controller.ClientController">
    <children>
-      <Canvas fx:id="map" height="800.0" width="800.0" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased"/>
+      <Canvas fx:id="map" height="800.0" layoutX="50.0" layoutY="50.0" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" style="-fx-border-width: 10; -fx-border-style: solid; -fx-border-color: rgb(255,255,255); -fx-border-insets: 5;" width="800.0" />
    </children>
 </AnchorPane>

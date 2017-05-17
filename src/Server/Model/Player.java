@@ -118,14 +118,12 @@ public class Player extends GameObject {
 
         if(counter>10 && !isVisible) {
             counter =0;
-            System.out.println("VISIBLE");
             isVisible = true;
         }
 
         if(counter>50 && isVisible) {
             counter =0;
             isVisible = false;
-            System.out.println("INVISIBLE");
         }
 
         if (!isInPlay)
@@ -138,7 +136,6 @@ public class Player extends GameObject {
                 angle-=diff;
                 //dir.decrement();
 
-        System.out.println(angle);
         ox = getX();
         oy = getY();
         counter ++;

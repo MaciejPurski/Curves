@@ -1,4 +1,5 @@
 package Client.Model;
+import Client.ClientApp;
 import Packets.GameStatePacket;
 import Server.Model.GameObject;
 import Server.Model.Player;
@@ -36,22 +37,14 @@ public class ClientModel {
         players.add(new ClientPlayer (thickness, color, name));
 
     }
+    /**
+     *Function used when starting new game
+     */
 
-    public void init(int nPlayers) {
-        if (nPlayers > this.nPlayers) {
-            while (nPlayers > this.nPlayers) {
-                players.add(new ClientPlayer () );
-            }
+    public void initPlayers() {
+        for(ClientPlayer it: players)
+            it.setStartingPosition();
 
-        }
-
-        if (nPlayers < this.nPlayers) {
-            while (nPlayers < this.nPlayers) {
-                players.remove(players.size() - 1);
-            }
-        }
-
-        this.nPlayers = nPlayers;
     }
 
     public void update (GameStatePacket packet) {

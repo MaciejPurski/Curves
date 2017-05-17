@@ -50,8 +50,10 @@ public class ClientController extends Thread{
         try {
             System.out.println("Entered");
             fillUsersList();
-            client.start();
-            gameLoop();
+            initMap();
+            while (true) {
+                gameLoop();
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -64,13 +66,15 @@ public class ClientController extends Thread{
 
         switch (event.getCode()) {
             case LEFT:
-                if (!isPressedLeft) {
+                if (!isPressedLeft && !isPressedRight) {
                     client.sendData(new MovePacket(playerIndex, Player.Turn.LEFT).toString());
+                    isPressedLeft = true;
                 }
                 break;
             case RIGHT:
-                if(!isPressedRight){
+                if(!isPressedRight && !isPressedLeft){
                     client.sendData(new MovePacket(playerIndex, Player.Turn.RIGHT).toString());
+                    isPressedRight = true;
                 }
                 break;
             default:
@@ -104,7 +108,9 @@ public class ClientController extends Thread{
             }
             else if (received instanceof GameStatePacket) {
                 GameStatePacket gameState = (GameStatePacket) received;
+
                 model.update(gameState);
+
                 return;
             }
 
@@ -116,15 +122,20 @@ public class ClientController extends Thread{
 
     public void gameLoop() throws IOException{
         long lastTime = System.nanoTime();
-        final double amountOfTicks = 30.0;
+        final double amountOfTicks = 25.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
         Packet received;
         GameStatePacket gameState;
 
         long timer = System.currentTimeMillis();
+
+        received = client.receive();
+        gameState = (GameStatePacket) received;
         initMap();
-        model.startGame();
+        model.update(gameState);
+        model.initPlayers();
+        drawModel();
 
         while (model.isGameInProgress()) {
             long now = System.nanoTime();
@@ -150,7 +161,7 @@ public class ClientController extends Thread{
         }
     }
 
-    //TODO player name to the model
+
 
     public void setPlayer(String string) {
         playerName = string;
@@ -163,7 +174,7 @@ public class ClientController extends Thread{
         GraphicsContext gc = map.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.WHITE);
-        gc.setLineWidth(2);
+        gc.setLineWidth(5);
         gc.fillRect(0,0,800,800);
     }
 
@@ -171,44 +182,43 @@ public class ClientController extends Thread{
 
         GraphicsContext gc = map.getGraphicsContext2D();
         for (ClientPlayer it : model.getPlayers()) {
+            Color playerColor;
+
+            if (it.getColor() == Player.GameColor.BLUE)
+                playerColor = Color.BLUE;
+             else if (it.getColor() == Player.GameColor.RED)
+                playerColor = Color.RED;
+             else if (it.getColor() == Player.GameColor.GREEN)
+                playerColor = Color.GREEN;
+             else
+                playerColor = Color.YELLOW;
+
+
 
             //TODO więcej kolorów
             if(it.isVisible()) {
                 drawCounter = 0;
-                if (it.getColor() == Player.GameColor.BLUE) {
-                    gc.setStroke(Color.BLUE);
-                    gc.setFill(Color.BLUE);
-                } else if (it.getColor() == Player.GameColor.RED) {
-                    gc.setStroke(Color.RED);
-                    gc.setFill(Color.RED);
-                } else if (it.getColor() == Player.GameColor.GREEN) {
-                    gc.setStroke(Color.GREEN);
-                    gc.setFill(Color.GREEN);
-                } else {
-                    gc.setStroke(Color.YELLOW);
-                    gc.setFill(Color.YELLOW);
-                }
 
-
-
+                gc.setFill(playerColor);
+                gc.setStroke(playerColor);
 
                 gc.setLineCap(StrokeLineCap.ROUND);
-                gc.setLineJoin(StrokeLineJoin.BEVEL);
+                gc.setLineJoin(StrokeLineJoin.ROUND);
                 gc.setLineWidth(8);
-                gc.strokeLine(it.getOx(), it.getOy(), it.getX(), it.getOy());
+                gc.strokeLine(it.getOx(), it.getOy(), it.getX()+2, it.getY()+2);
             }
                 else {
 
-                if (drawCounter>=1) {
+                if(drawCounter>= 1) {
                     gc.setFill(Color.BLACK);
-                    gc.fillRect(it.getOx(), it.getOy(), 2, 2);
 
                 }
-                    else
-                {
-                    gc.fillRect(it.getOx(), it.getOy(), 2, 2);
-                    gc.fillRect(it.getX(), it.getY(), 2, 2);
+                else {
+                    gc.setFill(playerColor);
+                    gc.setStroke(playerColor);
                 }
+
+                gc.fillRect(it.getOx(), it.getOy(), 2, 2);
 
 
 

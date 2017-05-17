@@ -10,6 +10,8 @@ import Server.Model.Player;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static java.lang.Thread.sleep;
+
 
 /**
  * Created by maciej on 26.04.17.
@@ -34,7 +36,9 @@ public class ServerController {
 
             fillUsersList();
             server.start();
-            gameLoop();
+            while (true) {
+                gameLoop();
+            }
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -42,16 +46,25 @@ public class ServerController {
 
     }
 
-    public void gameLoop() {
-        long lastTime = System.nanoTime();
-        final double amountOfTicks = .0;
+    public void gameLoop() throws Exception {
+
+        final double amountOfTicks = 25.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
 
-        long timer = System.currentTimeMillis();
+
+        model.init();
         model.startGame();
 
-        while (true) {
+        //first packet
+
+        GameStatePacket toSend = new GameStatePacket(model);
+        server.multicastSend(toSend.toString());
+        sleep(3000);
+        long lastTime = System.nanoTime();
+        long timer = System.currentTimeMillis();
+
+        while (model.isGameInProgress()) {
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
@@ -59,8 +72,9 @@ public class ServerController {
                 saveSignals();
                 model.update();
 
-                GameStatePacket toSend = new GameStatePacket(model);
+                toSend = new GameStatePacket(model);
                 server.multicastSend(toSend.toString());
+                System.out.println(toSend.toString());
 
 
                 delta--;
@@ -70,6 +84,8 @@ public class ServerController {
                 timer += 1000;
             }
         }
+
+        sleep(3000);
     }
 
     public void saveSignals() {
