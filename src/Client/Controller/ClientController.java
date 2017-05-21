@@ -11,22 +11,31 @@ import Packets.Packet;
 import Packets.PlayerPacket;
 import Server.Model.PlayerServer;
 import Server.Model.Turn;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 
 import java.io.*;
 
 
-public class ClientController extends Thread{
+public class ClientController {
 
     private int playerIndex;
     private ClientThread client;
@@ -39,11 +48,20 @@ public class ClientController extends Thread{
     @FXML
     private VBox playersList;
     @FXML
-    private Label text1,text2,text3,text4;
+    private Label text1,text2,text3,text4, text5, text6;
     @FXML
-    private Circle circle1, circle2, circle3, circle4;
+    private Circle circle1, circle2, circle3, circle4, circle5, circle6;
+    @FXML
+    private Button join, abandon;
 
     public ClientController() {
+        try {
+            client = new ClientThread("Client");
+            model = new ClientModel();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -55,7 +73,7 @@ public class ClientController extends Thread{
 
     public void run() {
         try {
-
+            fillUsersList();
             initMap();
             while (true) {
                 gameLoop();
@@ -98,6 +116,30 @@ public class ClientController extends Thread{
         isPressedLeft = false;
 
         client.sendData(new MovePacket(playerIndex, Turn.NONE).toString());
+    }
+
+    @FXML
+    void onJoinClick(MouseEvent event) {
+        try {
+
+            Stage stage = new Stage();
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Client/Login.fxml"));
+            Parent root = (Parent) loader.load();
+            LoginController login = loader.getController();
+            login.init(client,this);
+            stage.setScene(new Scene(root));
+            stage.setTitle("Login");
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(
+                    ((Node) event.getSource()).getScene().getWindow());
+            stage.show();
+        }
+            catch (Exception e) {
+            e.printStackTrace();
+            }
+
+
     }
 
 
@@ -250,6 +292,16 @@ public class ClientController extends Thread{
                     text4.setText(model.getPlayers().get(i).getName());
                     circle4.setFill(model.getPlayers().get(i).getColor().toColor());
                     circle4.setVisible(true);
+                    break;
+                case 4:
+                    text5.setText(model.getPlayers().get(i).getName());
+                    circle5.setFill(model.getPlayers().get(i).getColor().toColor());
+                    circle5.setVisible(true);
+                    break;
+                case 5:
+                    text6.setText(model.getPlayers().get(i).getName());
+                    circle6.setFill(model.getPlayers().get(i).getColor().toColor());
+                    circle6.setVisible(true);
                     break;
             }
         }

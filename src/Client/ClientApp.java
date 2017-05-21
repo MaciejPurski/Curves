@@ -24,7 +24,7 @@ public class ClientApp extends Application {
     }
 
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("Game.fxml"));
         primaryStage.setTitle("Curves");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

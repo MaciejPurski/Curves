@@ -10,6 +10,7 @@ import Server.Model.PlayerServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static java.lang.Thread.sleep;
 
@@ -108,10 +109,17 @@ public class ServerController {
      */
 
     private void fillUsersList() throws IOException{
+        ArrayList<GameColor> colorsTable = new ArrayList<GameColor> ();
+
+        for (int i=0; i<8; i++)
+            colorsTable.add(GameColor.fromInt(i));
+
+        Collections.shuffle(colorsTable);
+
         for(int i=0; i<nPlayers; i ++) {
 
             String name = server.addUser(i);
-            model.addPlayer(GameColor.fromInt(i), name);
+            model.addPlayer(colorsTable.get(i), name);
 
         }
     }
@@ -125,7 +133,6 @@ public class ServerController {
             PlayerPacket packet = new PlayerPacket(model.getPlayers().get(i), i);
             System.out.println(packet.toString());
             server.multicastSend(packet.toString());
-            sleep(500);
         }
     }
 }

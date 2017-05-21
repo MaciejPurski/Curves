@@ -1,6 +1,8 @@
 package Client.Controller;
 
 import Client.Model.ClientModel;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,11 +24,10 @@ public class LoginController {
     private TextField port, name, ipAddress;
 
     private ClientThread client;
-    private ClientModel model;
+    private ClientController controller;
 
     public LoginController () throws IOException{
-        client = new ClientThread("Client");
-        model = new ClientModel ();
+
     }
 
     @FXML
@@ -34,35 +35,48 @@ public class LoginController {
         //TODO porządek i zmiana nazw oraz idiotoodporność
         System.out.println("IpAddress: " + ipAddress.getText() + " port: "
                 + port.getText() + " name: " + name.getText());
-        int index = client.connect(ipAddress.getText(), Integer.parseInt(port.getText()), name.getText());
+        client.connect(ipAddress.getText(), Integer.parseInt(port.getText()), name.getText());
+        Task task = new Task<Void>() {
+            @Override
+            public Void call() throws Exception {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../Game.fxml"));
-        Parent root = loader.load();
-        ClientController controller = loader.getController();
-        controller.init(client, model);
+                    Platform.runLater(() ->{
+                        try {
+                            //an event with a button maybe
+                            System.out.println("before filling up");
+                            controller.fillUsersList();
+                            System.out.println("after filling up");
+                            controller.initMap();
+                            while (true) {
+                                controller.gameLoop();
+                                if (Thread.currentThread().isInterrupted()) {
+                                    break;
+                                }
+                            }
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+                    return null;
+             }
+        };
 
-        Scene home_page_scene = new Scene(root);
-        Stage app_stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-        app_stage.setScene(home_page_scene);
-        app_stage.setOnCloseRequest(e-> {
-            app_stage.close();
-            System.out.println("Closed");
-            controller.interrupt();
-                }
-            );
-        app_stage.setResizable(false);
-        app_stage.centerOnScreen();
-        app_stage.show();
-        System.out.println("done");
-        controller.fillUsersList();
+        Thread th = new Thread(task);
+        th.setDaemon(true);
+        th.start();
 
-        controller.start();
-
+        Stage dialog = (Stage)((Node)event.getTarget()).getScene().getWindow();
+        dialog.close();
     }
 
 
-    public void init (ClientThread client) {
+
+
+
+
+    public void init (ClientThread client, ClientController controller) {
         this.client = client;
+        this.controller = controller;
     }
 }
