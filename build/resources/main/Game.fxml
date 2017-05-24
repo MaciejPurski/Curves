@@ -81,7 +81,7 @@
          </padding>
       </VBox>
       <Button fx:id="join" focusTraversable="false" layoutX="825.0" layoutY="660.0" mnemonicParsing="false" onMouseClicked="#onJoinClick" prefHeight="55.0" prefWidth="132.0" text="Join" />
-      <Button fx:id="Abandon" focusTraversable="false" layoutX="993.0" layoutY="660.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="132.0" text="Abandon" />
+      <Button fx:id="Abandon" focusTraversable="false" layoutX="993.0" layoutY="660.0" mnemonicParsing="false" onMouseClicked="#onAbandonClick" prefHeight="55.0" prefWidth="132.0" text="Abandon" />
       <Label fx:id="text11" layoutX="859.0" prefHeight="55.0" prefWidth="268.0" text="Players" textFill="WHITE">
          <font>
             <Font name="FreeMono Bold" size="30.0" />

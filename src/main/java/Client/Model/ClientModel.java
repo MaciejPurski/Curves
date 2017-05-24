@@ -11,7 +11,6 @@ import Util.Player;
 public class ClientModel {
 
 
-
     private int nPlayers;
     private ArrayList<Player> players;
     private boolean gameInProgress;
@@ -22,6 +21,9 @@ public class ClientModel {
         gameInProgress = false;
     }
 
+    /**
+     * Called when client is leaving the game
+     */
 
     public void reset() {
         nPlayers = 0;
@@ -44,6 +46,11 @@ public class ClientModel {
             it.init(it.getX(), it.getY());
 
     }
+
+    /**
+     * Updates players positions based on new coordinates received from the server
+     * @param packet
+     */
 
     public void update (GameStatePacket packet) {
         gameInProgress = packet.isGameInProgress();

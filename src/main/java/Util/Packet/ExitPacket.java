@@ -28,7 +28,8 @@ public class ExitPacket extends Packet {
     public void parse (String string) throws NumberFormatException{
         String [] tab;
         tab = string.split(" ");
-        playerIndex = Integer.parseInt(tab[1]);
+        String str = tab[1].substring(0,1);
+        playerIndex = Integer.parseInt(str);
 
     }
     public int getPlayerIndex() {

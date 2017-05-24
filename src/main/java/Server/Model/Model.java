@@ -40,14 +40,15 @@ public class Model {
 
 
     /**
-     * Method called on each game beginning
+     * Method called on each game beginning. If a player disconnects, he always remains not in play
      */
 
     public void init () {
         map.init();
         gameInProgress = true;
         for(ServerPlayer it : players) {
-            it.init();
+            if(it.isConnected())
+                it.init();
         }
     }
 

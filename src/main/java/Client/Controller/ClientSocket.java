@@ -10,34 +10,20 @@ import java.util.Scanner;
 /**
  * Created by maciej on 12.05.17.
  */
-public class ClientThread extends Thread{
+public class ClientSocket {
     private DatagramSocket socket;
     private MulticastSocket multicast;
     private InetAddress serverAddress;
     private int serverPort;
 
 
-    public ClientThread (String name)  throws IOException {
-        super(name);
+    public ClientSocket()  throws IOException {
+
         socket = new DatagramSocket(9878);
         multicast = new MulticastSocket(9877);
+        multicast.joinGroup(InetAddress.getByName("224.0.0.3"));
     }
 
-    public void reset() {
-        try {
-            multicast.leaveGroup(InetAddress.getByName("224.0.0.3"));
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void run () {
-        while (true) {
-
-        }
-
-    }
 
     /**
      * Method sends login packet to the server and waits for the confirmation
@@ -48,9 +34,8 @@ public class ClientThread extends Thread{
      * @throws IOException
      */
 
-    public int connect(String ip, int port, String name) throws SocketTimeoutException, IOException{
-        //TODO connection failed
 
+    public int connect(String ip, int port, String name) throws SocketTimeoutException, IOException{
 
             serverAddress = InetAddress.getByName(ip);
             serverPort = port;
@@ -63,7 +48,6 @@ public class ClientThread extends Thread{
 
             IndexPacket indexPacket = (IndexPacket) received;
 
-            multicast.joinGroup(InetAddress.getByName("224.0.0.3"));
 
         return indexPacket.getPlayerIndex();
     }
@@ -88,9 +72,12 @@ public class ClientThread extends Thread{
         multicast.receive(packet);
         String string = new String(packet.getData());
         Packet received = Packet.createPacket(string);
+        System.out.println(string);
 
         return received;
     }
+
+
 
     public Packet receiveUnicast() throws SocketTimeoutException, IOException{
         byte [] buf = new byte[256];

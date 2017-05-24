@@ -11,6 +11,7 @@ public class Player {
     private int y;
     private boolean isInPlay;
     private boolean isVisible;
+    private boolean isConnected;
     private GameColor color;
     private int ox, oy; // old coordinates needed in order to draw the player
 
@@ -28,6 +29,7 @@ public class Player {
     public Player(GameColor color, String name) {
         isInPlay = false;
         isVisible = true;
+        isConnected = true;
         this.color = color;
         this.name = name;
     }
@@ -114,4 +116,11 @@ public class Player {
 
     public String getName() { return name; }
 
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public void setConnected(boolean connected) {
+        isConnected = connected;
+    }
 }

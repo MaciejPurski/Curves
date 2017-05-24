@@ -46,9 +46,9 @@
             </HBox>
          </children>
       </VBox>
-      <Label fx:id="label" alignment="CENTER" layoutX="130.0" layoutY="100.0" visible="false">
+      <Label fx:id="label" alignment="TOP_LEFT" layoutX="5.0" layoutY="100.0" visible="false">
          <font>
-            <Font name="System Bold" size="20.0" />
+            <Font name="System Bold" size="15.0" />
          </font>
       </Label>
    </children>

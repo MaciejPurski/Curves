@@ -26,19 +26,5 @@ public class ServerApp extends Application {
         primaryStage.show();
 
     }
-    /*public static void main(String[] args) throws IOException {
 
-        int nplayers;
-        Scanner in = new Scanner(System.in);
-
-        System.out.println("Give number of players: ");
-        nplayers = in.nextInt();
-        /*if (args.length != 1) {
-            System.out.println("Usage: java Server <number of players>");
-            return;
-        }
-
-        ServerController serverController = new ServerController (nplayers);
-        serverController.start();
-    }*/
 }

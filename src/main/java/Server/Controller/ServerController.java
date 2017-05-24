@@ -11,6 +11,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -24,6 +25,7 @@ import static java.lang.Thread.sleep;
 public class ServerController implements Runnable {
 
     private int nPlayers;
+    private int activePlayers;
     private ServerSock server;
     private Model model;
     private boolean isConnected;
@@ -49,55 +51,33 @@ public class ServerController implements Runnable {
         if (isConnected)
             return;
 
-        try {
-            ((Node)event.getSource()).getScene().getWindow().setOnCloseRequest(e -> {
-                gameThread.interrupt();
-                serverThread.interrupt();
-                server.sendStopPacket();
-                setGameStop();
-            });
-            nPlayers = (int) slider.getValue();
-            server.setnUsers(nPlayers);
+        // stop the game when stop is pressed
 
-            isConnected = true;
-            server.init();
+        ((Node) event.getSource()).getScene().getWindow().setOnCloseRequest(e -> {
+            if (!isConnected)
+                System.exit(0);
+            setGameStop();
+        });
 
-            textArea.appendText("Game initialized with " + nPlayers + " players. Waiting for players to log in...\n");
-            new Thread ( () -> {
-                try {
-                    fillUsersList();
-                    sendPlayersInfo();
+        //read users number from the slider
 
-                    serverThread = new Thread (server);
-                    gameThread = new Thread ( this);
-                    serverThread.start();
-                    gameThread.start();
-                }
-                catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }).start();
+        nPlayers = (int) slider.getValue();
+        server.setnUsers(nPlayers);
 
+        server.init();
 
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        textArea.appendText("Game initialized with " + nPlayers + " players. Waiting for players to log in...\n");
+        new Thread(() -> initConnection()).start();
+
     }
+
+
 
     @FXML
     void onStopPressed() {
         if(!isConnected)
             return;
-        gameThread.interrupt();
-        serverThread.interrupt();
-        server.sendStopPacket();
         setGameStop();
-
-        textArea.appendText("Game stopped \n");
-
-
-
     }
 
     public void run ()
@@ -122,7 +102,7 @@ public class ServerController implements Runnable {
 
     }
 
-    public void gameLoop() throws Exception {
+    private void gameLoop() throws Exception {
 
         final double amountOfTicks = 25.0;
         double ns = 1000000000 / amountOfTicks;
@@ -130,20 +110,13 @@ public class ServerController implements Runnable {
 
 
         model.init();
-        //first packet
+        appendLogs("Game ready to start\n");
 
-        Platform.runLater(() -> {
-            textArea.appendText("Game ready to start\n");
-        });
-
-        GameStatePacket toSend = new GameStatePacket(model);
-        server.multicastSend(toSend.toString());
-
+        //Thread sleeps after first packet has been sent
+        sendGameState();
         sleep(3000);
 
-        Platform.runLater(() -> {
-            textArea.appendText("Game started\n");
-        });
+        appendLogs("Game started\n");
 
         long lastTime = System.nanoTime();
         long timer = System.currentTimeMillis();
@@ -153,17 +126,12 @@ public class ServerController implements Runnable {
             delta += (now - lastTime) / ns;
             lastTime = now;
             if (delta >= 1) {
-                saveSignals();
-                model.update();
 
-                toSend = new GameStatePacket(model);
-                server.multicastSend(toSend.toString());
-                Platform.runLater(() -> {
-                    String message = model.getMessage();
-                    if (message.length()!= 0)
-                        textArea.appendText(message);
-                });
+                proceedPackets(); // get players signals
+                model.update(); // update game state based on signals received
+                sendGameState(); // send new player positions and their state
 
+                appendLogs(model.getMessage()); // if someone was knocked out - show the message
 
                 delta--;
             }
@@ -172,18 +140,21 @@ public class ServerController implements Runnable {
                 timer += 1000;
             }
             if (Thread.currentThread().isInterrupted()) {
-                break;
+                return;
             }
         }
 
-        Platform.runLater(() -> {
-            textArea.appendText("Game finished. Getting ready to start next game\n");
-        });
+
+        appendLogs("Game finished. Getting ready to start next game\n");
 
         sleep(3000);
     }
 
-    public void saveSignals() {
+    /**
+     * Method used to proceed packets that have been received by the server and contain players' moves or exit signals
+     */
+
+    private void proceedPackets() {
         ArrayList<Packet> tab = server.getPackets();
 
         for(Packet it: tab) {
@@ -191,34 +162,45 @@ public class ServerController implements Runnable {
                 MovePacket received = (MovePacket) it;
                 model.changeDirection(received.getPlayer(), received.getTurn());
             }
+            else if (it instanceof ExitPacket) {
+                ExitPacket received = (ExitPacket) it;
+                model.getPlayers().get(received.getPlayerIndex()).setConnected(false);
+                model.getPlayers().get(received.getPlayerIndex()).setInPlay(false);
+                activePlayers--;
+                appendLogs("Player with index " + ((ExitPacket) it).getPlayerIndex()+ " has disconnected\n");
+                if (activePlayers == 0)
+                {
+                    appendLogs("All players left \n");
+                    setGameStop();
+                }
+
+            }
             //TODO inne pakiety
 
         }
     }
 
     /**
-     * Method called when the server is started. It waits for players to log in. The number of players is specified when the server is started
+     * Method called when the server is started. It waits for players to log in.
+     * The number of players is specified when the server is started
      * @throws IOException
      */
 
-    private void fillUsersList() throws IOException{
-        ArrayList<GameColor> colorsTable = new ArrayList<GameColor> ();
+    private void fillUsersList() {
 
-        for (int i=0; i<8; i++)
-            colorsTable.add(GameColor.fromInt(i));
-
-        Collections.shuffle(colorsTable);
+        ArrayList <GameColor> colorsTable = getColorsTable();
 
         for(int i=0; i<nPlayers; i ++) {
-
-            String name = server.addUser(i);
-            model.addPlayer(colorsTable.get(i), name);
-            int index = i;
-            Platform.runLater(() -> {
-                textArea.appendText("Player with name: " + name + " index: " + index + " has connected. Current players: " + (index+1) + "/"
-                        + nPlayers+ "\n");
-            });
-
+            try {
+                String name = server.addUser(i);
+                model.addPlayer(colorsTable.get(i), name);
+                appendLogs("Player with name: " + name + " index: " + i + " has connected. Current players: " + (i+1) + "/"
+                            + nPlayers+ "\n");
+            }
+            catch (IOException ex) {
+                ex.printStackTrace();
+                i--; //ignore packet
+            }
         }
     }
 
@@ -226,15 +208,75 @@ public class ServerController implements Runnable {
      * Method sends to all the players info on other players
      */
 
-    private void sendPlayersInfo() throws Exception{
+    private void sendPlayersInfo() {
         PlayerPacket packet = new PlayerPacket(model.getPlayers());
-        System.out.println(packet.toString());
         server.multicastSend(packet.toString());
     }
 
-    public void setGameStop() {
+    /**
+     * Method called when there is a need to stop the game. It interrupts running threads and resets the model
+     */
+
+    private void setGameStop() {
+        gameThread.interrupt();
+        serverThread.interrupt();
+        server.sendStopPacket();
         nPlayers = 0;
         isConnected = false;
         model.reset();
+        textArea.appendText("Game stopped \n");
+    }
+
+    /**
+     * Method called to perform new connection
+     */
+
+    private void initConnection() {
+        try {
+
+            fillUsersList();
+            sendPlayersInfo();
+            serverThread = new Thread(server);
+            gameThread = new Thread(this);
+            serverThread.start();
+            gameThread.start();
+            isConnected = true;
+            activePlayers = nPlayers;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Method used to shuffle colors
+     * @return shuffled colors table
+     */
+
+    private ArrayList<GameColor> getColorsTable() {
+        ArrayList<GameColor> colorsTable = new ArrayList<> ();
+        for (int i=0; i<8; i++)
+            colorsTable.add(GameColor.fromInt(i));
+
+        Collections.shuffle(colorsTable);
+        return colorsTable;
+    }
+
+    /**
+     * Method used to add a message to logs list on the screen. It is called from different threads
+     * @param string
+     */
+
+    private void appendLogs(String string) {
+        if (string.isEmpty())
+            return;
+        Platform.runLater( () ->
+        textArea.appendText(string));
+    }
+
+    private void sendGameState() {
+        GameStatePacket toSend = new GameStatePacket(model);
+        server.multicastSend(toSend.toString());
     }
 }

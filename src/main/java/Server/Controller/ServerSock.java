@@ -49,24 +49,15 @@ public class ServerSock implements Runnable {
 
     public void run() {
 
-        try {
-            while(true)
-            {
-                if (Thread.currentThread().isInterrupted()) {
-                    multicastSend(new ServerStopPacket().toString());
-                    socket.close();
-                    break;
-                }
-                Packet received = receive();
-                queue.put(received);
+        while (true) {
+            if (Thread.currentThread().isInterrupted()) {
+                multicastSend(new ServerStopPacket().toString());
+                socket.close();
+                break;
             }
-
-        } catch (IOException e)
-        {
-            e.printStackTrace();
+            Packet received = receive();
+            queue.put(received);
         }
-
-
     }
 
     /**
@@ -75,7 +66,9 @@ public class ServerSock implements Runnable {
      * @param index index of the player who should be added
      */
 
-    public String addUser (int index) throws IOException {
+    public String addUser (int index)  throws InvalidObjectException, IOException{
+
+
 
         byte[] buf = new byte [256];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -107,6 +100,7 @@ public class ServerSock implements Runnable {
             buf = message.getBytes();
             DatagramPacket packet = new DatagramPacket(buf, message.length(), group, 9877);
             socket.send(packet);
+            System.out.println(message);
         }
         catch (IOException e)
         {
@@ -137,12 +131,20 @@ public class ServerSock implements Runnable {
     }
 
 
-    public Packet receive () throws IOException{
-        byte [] buf = new byte[256];
-        DatagramPacket packet = new DatagramPacket (buf, buf.length);
-        socket.receive(packet);
-        String string = new String(packet.getData());
+    public Packet receive () {
 
+        byte[] buf = new byte[256];
+        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+        try {
+
+            socket.receive(packet);
+
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        String string = new String(packet.getData());
         Packet received = Packet.createPacket(string);
 
         return received;

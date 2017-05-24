@@ -4,11 +4,8 @@ package Client.Controller;
  * Created by maciej on 22.03.17.
  */
 import Client.Model.ClientModel;
+import Util.Packet.*;
 import Util.Player;
-import Util.Packet.GameStatePacket;
-import Util.Packet.MovePacket;
-import Util.Packet.Packet;
-import Util.Packet.PlayerPacket;
 import Util.Turn;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -23,7 +20,6 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeLineCap;
@@ -39,7 +35,7 @@ import java.io.*;
 public class ClientController implements Runnable{
 
     private int playerIndex;
-    private ClientThread client;
+    private ClientSocket client;
     private ClientModel model;
     private boolean isPressedRight;
     private boolean isPressedLeft;
@@ -49,30 +45,15 @@ public class ClientController implements Runnable{
     @FXML
     private Canvas map;
     @FXML
-    private VBox playersList;
-    @FXML
     private Label text1,text2,text3,text4, text5, text6;
     @FXML
     private Circle circle1, circle2, circle3, circle4, circle5, circle6;
-    @FXML
-    private Button join, abandon;
 
-    public ClientController() {
-        try {
+
+    public ClientController() throws IOException{
             isConnected = false;
-            client = new ClientThread("Client");
+            client = new ClientSocket();
             model = new ClientModel();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void init (ClientThread client, ClientModel model) {
-
-        this.client = client;
-        this.model = model;
     }
 
     public void run() {
@@ -87,11 +68,12 @@ public class ClientController implements Runnable{
         catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @FXML
     public void onKeyPressed(KeyEvent event) {
+        if(!isConnected)
+            return;
 
         switch (event.getCode()) {
             case LEFT:
@@ -113,13 +95,19 @@ public class ClientController implements Runnable{
     }
 
     @FXML
-    public void onKeyReleased(KeyEvent event) {
+    public void onKeyReleased() {
+        if(!isConnected)
+            return;
         isPressedRight = false;
         isPressedLeft = false;
 
         client.sendData(new MovePacket(playerIndex, Turn.NONE).toString());
     }
 
+    /**
+     * Method creates login window in which all the logging procedure takes place
+     * @param event
+     */
     @FXML
     void onJoinClick(MouseEvent event) {
         try {
@@ -127,36 +115,41 @@ public class ClientController implements Runnable{
             if (isConnected)
                 return;
 
+            // set what to do when window is closed
             Stage stage = new Stage();
-            ((Node)event.getSource()).getScene().getWindow().setOnCloseRequest(e -> {
+            ((Node) event.getSource()).getScene().getWindow().setOnCloseRequest(e -> {
                 //TODO set exit packet
-                if(gameThread!= null)
+                if (!isConnected)
+                    System.exit(0);
+                if (gameThread != null)
                     gameThread.interrupt();
             });
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
             Parent root = (Parent) loader.load();
             LoginController login = loader.getController();
-            login.init(client,this);
+            login.init(client, this);
             stage.setScene(new Scene(root));
             stage.setTitle("Login");
             stage.initModality(Modality.WINDOW_MODAL);
             stage.initOwner(
                     ((Node) event.getSource()).getScene().getWindow());
             stage.show();
-        }
-            catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            }
-
-
+        }
+    }
+    @FXML
+    void onAbandonClick () {
+        exitGame();
     }
 
+    /**
+     * Method called at each new connection
+     * @throws IOException
+     */
 
-
-
-    public void fillUsersList () throws IOException{
-
+    void fillUsersList () throws IOException{
 
             Packet received = client.receiveMulticast();
             if (received instanceof PlayerPacket) { //information on new player
@@ -169,35 +162,19 @@ public class ClientController implements Runnable{
 
     }
 
-    public void gameLoop() throws IOException{
+    void gameLoop() throws IOException{
         long lastTime = System.nanoTime();
         final double amountOfTicks = 25.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
-        Packet received;
-        GameStatePacket gameState;
+
+
 
         long timer = System.currentTimeMillis();
 
-        received = client.receiveMulticast();
 
-        if (received instanceof GameStatePacket) {
-            gameState = (GameStatePacket) received;
-
-            model.update(gameState);
-            model.initPlayers();
-            Platform.runLater ( () -> {
-                initMap();
-                drawModel();
-            });
-
-        }
-        else {
-
-            // game stopped
-            setGameStop();
-        }
-
+        if( !proceedPacket())
+            return;
 
         while (model.isGameInProgress()) {
             long now = System.nanoTime();
@@ -205,21 +182,8 @@ public class ClientController implements Runnable{
             lastTime = now;
             if (delta >= 1) {
 
-
-                received = client.receiveMulticast();
-
-                if (received instanceof GameStatePacket) {
-                    gameState = (GameStatePacket) received;
-                    model.update(gameState);
-                    Platform.runLater ( () -> {
-                        drawModel();
-                    });
-                }
-                else {
-
-                     // game stopped
-                    setGameStop();
-                }
+                if( !proceedPacket())
+                    return;
 
                 delta--;
             }
@@ -240,7 +204,11 @@ public class ClientController implements Runnable{
         playerIndex = index;
     }
 
-    public void initMap () {
+    /**
+     * Method initializes map, by painting it all black
+     */
+
+    void initMap () {
         drawCounter = 0;
 
         map.setFocusTraversable(true);
@@ -251,7 +219,10 @@ public class ClientController implements Runnable{
         gc.fillRect(0,0,800,800);
     }
 
-    public void drawModel() {
+    /**
+     * Method draws all the players on canvas
+     */
+    private void drawModel() {
 
         GraphicsContext gc = map.getGraphicsContext2D();
         for (Player it : model.getPlayers()) {
@@ -269,27 +240,31 @@ public class ClientController implements Runnable{
                 gc.setLineWidth(8);
                 gc.strokeLine(it.getOx(), it.getOy(), it.getX()+2, it.getY()+2);
             }
-                else {
+                else { // there is a hole in a curve and we have to still keep track of the player position
 
-                if(drawCounter>= 1) {
+                if(drawCounter>= 1)
                     gc.setFill(Color.BLACK);
-
-                }
                 else {
                     gc.setFill(playerColor);
                     gc.setStroke(playerColor);
                 }
 
-                gc.fillRect(it.getOx(), it.getOy(), 2, 2);
+                gc.fillRect(it.getOx(), it.getOy(), 4, 4);
 
                 drawCounter ++;
             }
             gc.setFill(playerColor);
-            gc.fillRect(it.getX(), it.getY(), 2, 2);
+            gc.fillRect(it.getX(), it.getY(), 4, 4);
         }
     }
 
-    public void setGameStop () {
+    /**
+     * Method called when the game was stopped
+     */
+
+    void setGameStop () {
+
+        gameThread.interrupt();
         isConnected = false;
         model.setGameInProgress(false);
         initMap();
@@ -301,15 +276,23 @@ public class ClientController implements Runnable{
         gc.setFont(new Font(30));
         gc.strokeText("Server stopped", 20, 20);
         model.reset();
-        client.reset();
         isPressedLeft = false;
         isPressedRight = false;
         drawCounter=0;
-        Thread.currentThread().interrupt();
 
     }
 
-    public void showPlayers() {
+    void exitGame() {
+        ExitPacket packet = new ExitPacket(playerIndex);
+        client.sendData(packet.toString());
+        setGameStop();
+    }
+
+    /**
+     * Function draws players list - their colors and names
+     */
+
+    void showPlayers() {
         for (int i=0; i<model.getPlayers().size(); i++) {
             switch (i) {
                 case 0:
@@ -347,16 +330,63 @@ public class ClientController implements Runnable{
     }
 
 
-    public boolean isConnected() {
-        return isConnected;
-    }
-
-    public void setConnected(boolean connected) {
+    void setConnected(boolean connected) {
         isConnected = connected;
     }
 
-    public void start () {
+    /**
+     * Method starts a new game thread
+     */
+
+    void start () {
         gameThread = new Thread (this);
         gameThread.start();
     }
+
+    /**
+     * Method waits for a new packet and checks if it is a GameStatePacket, if not it returns false if yes it updates positions and draws new model
+     * @return true -if everything went ok and false if the game must be stopped
+     */
+
+    private boolean proceedPacket() {
+        try {
+            Packet received;
+
+            GameStatePacket gameState;
+            boolean isMapInitiated;
+            // check if it is a first packet received
+            if (!model.isGameInProgress()) {
+                isMapInitiated = false;
+            }
+            else
+                isMapInitiated = true;
+
+            received = client.receiveMulticast();
+
+            if (received instanceof GameStatePacket) {
+                gameState = (GameStatePacket) received;
+                model.update(gameState);
+
+                Platform.runLater(() -> {
+                    if (!isMapInitiated){
+                        model.initPlayers();
+                        initMap();
+                    }
+
+                    drawModel();
+                });
+
+            } else {
+                // game stopped
+                System.out.println("Game stop");
+                setGameStop();
+                return false;
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return true;
+    }
+
 }

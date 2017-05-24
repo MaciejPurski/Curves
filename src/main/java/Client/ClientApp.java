@@ -23,12 +23,18 @@ public class ClientApp extends Application {
         launch(args);
     }
 
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/Game.fxml"));
-        primaryStage.setTitle("Curves");
-        primaryStage.setScene(new Scene(root));
+    public void start(Stage primaryStage) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/Game.fxml"));
+            primaryStage.setTitle("Curves");
+            primaryStage.setScene(new Scene(root));
 
-        primaryStage.show();
+            primaryStage.show();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            System.exit(-1);
+        }
 
     }
 
