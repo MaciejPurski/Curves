@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Server.Controller.ServerController">
+   <children>
+      <HBox alignment="CENTER" layoutX="3.0" layoutY="271.0" prefHeight="25.0" prefWidth="594.0" spacing="50.0">
+         <children>
+            <Button mnemonicParsing="false" onMouseClicked="#onStartPressed" prefHeight="25.0" prefWidth="137.0" text="Start" />
+            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#onStopPressed" prefHeight="25.0" prefWidth="137.0" text="Stop" />
+         </children>
+      </HBox>
+      <TextArea fx:id="textArea" cacheShape="false" centerShape="false" editable="false" focusTraversable="false" layoutX="33.0" layoutY="14.0" pickOnBounds="false" prefHeight="200.0" prefWidth="536.0" scaleShape="false" />
+      <HBox alignment="CENTER" layoutX="-1.0" layoutY="229.0" prefHeight="37.0" prefWidth="594.0" spacing="50.0">
+         <children>
+            <Label text="Number of players:" />
+            <Slider fx:id="slider" blockIncrement="1.0" majorTickUnit="1.0" max="6.0" min="1.0" minorTickCount="0" showTickLabels="true" snapToTicks="true" value="1.0" />
+         </children>
+      </HBox>
+   </children>
+</Pane>

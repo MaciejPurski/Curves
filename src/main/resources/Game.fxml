@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.canvas.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="736.0" prefWidth="1200.0" style="-fx-background-color: rgb(120,120,120);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controller.ClientController">
+   <children>
+      <VBox fx:id="playersList" layoutX="817.0" layoutY="8.0" prefHeight="600.0" prefWidth="311.0" AnchorPane.topAnchor="60.0">
+         <children>
+            <Label fx:id="text1" prefHeight="100.0" prefWidth="295.0" textFill="WHITE">
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="FreeMono Bold" size="30.0" />
+               </font>
+            </Label>
+            <Label fx:id="text2" layoutX="60.0" layoutY="10.0" prefHeight="100.0" prefWidth="295.0" textFill="WHITE">
+               <font>
+                  <Font name="FreeMono Bold" size="30.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="text3" layoutX="60.0" layoutY="135.0" prefHeight="100.0" prefWidth="295.0" textFill="WHITE">
+               <font>
+                  <Font name="FreeMono Bold" size="30.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="text4" layoutX="60.0" layoutY="260.0" prefHeight="100.0" prefWidth="295.0" textFill="WHITE">
+               <font>
+                  <Font name="FreeMono Bold" size="30.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="text5" layoutX="60.0" layoutY="310.0" prefHeight="100.0" prefWidth="295.0" textFill="WHITE">
+               <font>
+                  <Font name="FreeMono Bold" size="30.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="text6" layoutX="60.0" layoutY="410.0" prefHeight="100.0" prefWidth="295.0" textFill="WHITE">
+               <font>
+                  <Font name="FreeMono Bold" size="30.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Label>
+         </children>
+      </VBox>
+      <VBox layoutX="1132.0" layoutY="8.0" prefHeight="600.0" prefWidth="68.0" spacing="60.0" AnchorPane.topAnchor="60.0">
+         <children>
+            <Circle fx:id="circle1" fill="DODGERBLUE" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false">
+               <VBox.margin>
+                  <Insets top="30.0" />
+               </VBox.margin>
+            </Circle>
+            <Circle fx:id="circle2" fill="DODGERBLUE" layoutX="27.0" layoutY="27.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+            <Circle fx:id="circle3" fill="DODGERBLUE" layoutX="27.0" layoutY="61.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+            <Circle fx:id="circle4" fill="DODGERBLUE" layoutX="27.0" layoutY="95.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+            <Circle fx:id="circle5" fill="DODGERBLUE" layoutX="27.0" layoutY="444.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+            <Circle fx:id="circle6" fill="DODGERBLUE" layoutX="27.0" layoutY="444.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+         </children>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </VBox>
+      <Button fx:id="join" focusTraversable="false" layoutX="825.0" layoutY="660.0" mnemonicParsing="false" onMouseClicked="#onJoinClick" prefHeight="55.0" prefWidth="132.0" text="Join" />
+      <Button fx:id="Abandon" focusTraversable="false" layoutX="993.0" layoutY="660.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="132.0" text="Abandon" />
+      <Label fx:id="text11" layoutX="859.0" prefHeight="55.0" prefWidth="268.0" text="Players" textFill="WHITE">
+         <font>
+            <Font name="FreeMono Bold" size="30.0" />
+         </font>
+      </Label>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" height="710.0" layoutX="15.0" layoutY="15.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="710.0" />
+      <Canvas fx:id="map" height="700.0" layoutX="20.0" layoutY="20.0" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" style="-fx-border-width: 10; -fx-border-style: solid; -fx-border-color: rgb(255,255,255); -fx-border-insets: 5;" width="700.0" />
+   </children>
+</AnchorPane>
