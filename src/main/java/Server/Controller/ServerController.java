@@ -64,7 +64,7 @@ public class ServerController implements Runnable {
         nPlayers = (int) slider.getValue();
         server.setnUsers(nPlayers);
 
-        server.init();
+
 
         textArea.appendText("Game initialized with " + nPlayers + " players. Waiting for players to log in...\n");
         new Thread(() -> initConnection()).start();
@@ -104,7 +104,7 @@ public class ServerController implements Runnable {
 
     private void gameLoop() throws Exception {
 
-        final double amountOfTicks = 25.0;
+        final double amountOfTicks = 23.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
 
@@ -128,6 +128,9 @@ public class ServerController implements Runnable {
             if (delta >= 1) {
 
                 proceedPackets(); // get players signals
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
                 model.update(); // update game state based on signals received
                 sendGameState(); // send new player positions and their state
 
@@ -139,9 +142,7 @@ public class ServerController implements Runnable {
             if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
             }
-            if (Thread.currentThread().isInterrupted()) {
-                return;
-            }
+
         }
 
 
@@ -175,7 +176,7 @@ public class ServerController implements Runnable {
                 }
 
             }
-            //TODO inne pakiety
+
 
         }
     }
@@ -210,6 +211,12 @@ public class ServerController implements Runnable {
 
     private void sendPlayersInfo() {
         PlayerPacket packet = new PlayerPacket(model.getPlayers());
+        try {
+            sleep(1000);
+        }
+        catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
         server.multicastSend(packet.toString());
     }
 
@@ -224,7 +231,7 @@ public class ServerController implements Runnable {
         nPlayers = 0;
         isConnected = false;
         model.reset();
-        textArea.appendText("Game stopped \n");
+        appendLogs("Game stopped");
     }
 
     /**
@@ -268,7 +275,7 @@ public class ServerController implements Runnable {
      * @param string
      */
 
-    private void appendLogs(String string) {
+    private synchronized void appendLogs(String string) {
         if (string.isEmpty())
             return;
         Platform.runLater( () ->

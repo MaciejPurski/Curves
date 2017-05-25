@@ -14,6 +14,8 @@ public class ClientSocket {
     private DatagramSocket socket;
     private MulticastSocket multicast;
     private InetAddress serverAddress;
+    InetAddress groupAddres;
+
     private int serverPort;
 
 
@@ -21,7 +23,9 @@ public class ClientSocket {
 
         socket = new DatagramSocket(9878);
         multicast = new MulticastSocket(9877);
-        multicast.joinGroup(InetAddress.getByName("224.0.0.3"));
+        groupAddres = InetAddress.getByName("224.0.0.3");
+
+
     }
 
 
@@ -40,6 +44,8 @@ public class ClientSocket {
             serverAddress = InetAddress.getByName(ip);
             serverPort = port;
 
+        multicast.joinGroup(groupAddres);
+
             sendData(new LoginPacket(name).toString());
             Packet received = receiveUnicast();
 
@@ -47,6 +53,8 @@ public class ClientSocket {
                 throw new InvalidObjectException("Wrong packet type" + received.getClass().getName());
 
             IndexPacket indexPacket = (IndexPacket) received;
+
+
 
 
         return indexPacket.getPlayerIndex();
@@ -67,12 +75,11 @@ public class ClientSocket {
 
 
     public Packet receiveMulticast() throws IOException{
-        byte [] buf = new byte[512];
+        byte [] buf = new byte[1024];
         DatagramPacket packet = new DatagramPacket (buf, buf.length);
         multicast.receive(packet);
         String string = new String(packet.getData());
         Packet received = Packet.createPacket(string);
-        System.out.println(string);
 
         return received;
     }
@@ -85,10 +92,16 @@ public class ClientSocket {
 
         socket.setSoTimeout(2000);
         socket.receive(packet);
-        socket.setSoTimeout(0);
         String string = new String(packet.getData());
 
 
         return Packet.createPacket(string);
     }
+
+    public void reset () throws IOException{
+
+        multicast.leaveGroup(groupAddres);
+        System.out.println("Leave group");
+    }
+
 }

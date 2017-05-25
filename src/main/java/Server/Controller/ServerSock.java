@@ -36,6 +36,7 @@ public class ServerSock implements Runnable {
         try {
             group = InetAddress.getByName("224.0.0.3");
             queue = new SynchronizedQueue();
+            socket = new DatagramSocket(serverPort);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -52,7 +53,6 @@ public class ServerSock implements Runnable {
         while (true) {
             if (Thread.currentThread().isInterrupted()) {
                 multicastSend(new ServerStopPacket().toString());
-                socket.close();
                 break;
             }
             Packet received = receive();
@@ -100,7 +100,6 @@ public class ServerSock implements Runnable {
             buf = message.getBytes();
             DatagramPacket packet = new DatagramPacket(buf, message.length(), group, 9877);
             socket.send(packet);
-            System.out.println(message);
         }
         catch (IOException e)
         {
@@ -172,14 +171,7 @@ public class ServerSock implements Runnable {
     /**
      * Method called when server is about to start
      */
-    public void init () {
-        try {
-            socket = new DatagramSocket(serverPort);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+
 
     public int getnUsers() {
         return nUsers;

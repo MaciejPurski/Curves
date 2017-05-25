@@ -31,6 +31,8 @@ import javafx.stage.Stage;
 
 import java.io.*;
 
+import static java.lang.Thread.sleep;
+
 
 public class ClientController implements Runnable{
 
@@ -121,8 +123,10 @@ public class ClientController implements Runnable{
                 //TODO set exit packet
                 if (!isConnected)
                     System.exit(0);
-                if (gameThread != null)
+                if (gameThread != null) {
+                    exitGame();
                     gameThread.interrupt();
+                }
             });
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
@@ -164,11 +168,9 @@ public class ClientController implements Runnable{
 
     void gameLoop() throws IOException{
         long lastTime = System.nanoTime();
-        final double amountOfTicks = 25.0;
+        final double amountOfTicks = 23.0;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
-
-
 
         long timer = System.currentTimeMillis();
 
@@ -263,6 +265,7 @@ public class ClientController implements Runnable{
      */
 
     void setGameStop () {
+        System.out.println("Game stop");
 
         gameThread.interrupt();
         isConnected = false;
@@ -279,12 +282,28 @@ public class ClientController implements Runnable{
         isPressedLeft = false;
         isPressedRight = false;
         drawCounter=0;
+        try {
+            client.reset();
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
     }
 
     void exitGame() {
         ExitPacket packet = new ExitPacket(playerIndex);
         client.sendData(packet.toString());
+
+        isConnected = false;
+        try {
+            gameThread.interrupt();
+            isConnected = false;
+            sleep(500);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
         setGameStop();
     }
 
@@ -378,7 +397,8 @@ public class ClientController implements Runnable{
 
             } else {
                 // game stopped
-                System.out.println("Game stop");
+                System.out.println(received.getClass().getName());
+                if (isConnected)
                 setGameStop();
                 return false;
             }

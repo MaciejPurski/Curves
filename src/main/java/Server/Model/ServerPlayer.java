@@ -18,7 +18,7 @@ import static java.lang.StrictMath.sin;
 public class ServerPlayer extends Player {
 
 
-    static private final int SPEED = 5;
+    static private final int SPEED = 4;
     static private final double DIFF = 0.1;
     private int counter;
 

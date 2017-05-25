@@ -13,7 +13,7 @@ public class Map {
     public static final int BLACK = -16777216;
     public static final int SIZE_X = 700;
     public static final int SIZE_Y = 700;
-    public static final int LINE_WIDTH = 8;
+    public static final int LINE_WIDTH = 6;
     private BufferedImage map;
     private Graphics2D painter;
 
