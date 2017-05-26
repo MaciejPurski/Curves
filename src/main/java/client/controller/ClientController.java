@@ -1,8 +1,6 @@
 package client.controller;
 
-/**
- * Created by maciej on 22.03.17.
- */
+
 import client.model.ClientModel;
 import util.packet.*;
 import util.Player;
@@ -68,6 +66,7 @@ public class ClientController implements Runnable{
         catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     @FXML
@@ -123,7 +122,6 @@ public class ClientController implements Runnable{
                     System.exit(0);
                 if (gameThread != null) {
                     exitGame();
-                    gameThread.interrupt();
                 }
             });
 
@@ -259,14 +257,18 @@ public class ClientController implements Runnable{
     }
 
     /**
-     * Method called when the game was stopped
+     * Method called when the game was stopped by user or by stopping the server.
+     * It is synchronized because it might occur that two threads at the same time call
+     * the method when the player leaves the game and he is the last player which results in
+     * getting game stop packet from the server.
      */
 
-    void setGameStop () {
+    synchronized void setGameStop () {
+        if (!isConnected)
+            return;
+        gameThread.interrupt();
         System.out.println("Game stop");
 
-        gameThread.interrupt();
-        isConnected = false;
         model.setGameInProgress(false);
         initMap();
         GraphicsContext gc = map.getGraphicsContext2D();
@@ -287,22 +289,16 @@ public class ClientController implements Runnable{
             ex.printStackTrace();
         }
 
+        isConnected = false;
+
     }
 
     void exitGame() {
         ExitPacket packet = new ExitPacket(playerIndex);
         client.sendData(packet.toString());
-
-        isConnected = false;
-        try {
-            gameThread.interrupt();
-            isConnected = false;
-            sleep(500);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
         setGameStop();
+
+
     }
 
     /**
@@ -396,8 +392,7 @@ public class ClientController implements Runnable{
             } else {
                 // game stopped
                 System.out.println(received.getClass().getName());
-                if (isConnected)
-                setGameStop();
+                    setGameStop();
                 return false;
             }
 

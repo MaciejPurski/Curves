@@ -5,6 +5,9 @@ import util.packet.*;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.net.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by maciej on 12.05.17.
@@ -43,7 +46,7 @@ public class ClientSocket {
             serverAddress = InetAddress.getByName(ip);
             serverPort = port;
 
-        multicast.joinGroup(groupAddres);
+
 
             sendData(new LoginPacket(name).toString());
             Packet received = receiveUnicast();
@@ -52,6 +55,8 @@ public class ClientSocket {
                 throw new InvalidObjectException("Wrong packet type" + received.getClass().getName());
 
             IndexPacket indexPacket = (IndexPacket) received;
+
+            multicast.joinGroup(groupAddres);
 
 
 
@@ -80,6 +85,8 @@ public class ClientSocket {
         String string = new String(packet.getData());
         Packet received = Packet.createPacket(string);
 
+        System.out.println(string);
+
         return received;
     }
 
@@ -97,10 +104,20 @@ public class ClientSocket {
         return Packet.createPacket(string);
     }
 
-    public void reset () throws IOException{
+    public void reset () throws IOException {
 
-        multicast.leaveGroup(groupAddres);
-        System.out.println("Leave group");
+        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(0);
+
+
+        exec.schedule(() -> {
+            try {
+                multicast.leaveGroup(groupAddres);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }, 200, TimeUnit.MILLISECONDS);
+
     }
 
 }

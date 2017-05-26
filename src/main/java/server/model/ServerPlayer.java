@@ -28,7 +28,7 @@ public class ServerPlayer extends Player {
      * or invisible
      */
     static private int VISIBLE = 70;
-    static private int INVISIBLE = 5;
+    static private int INVISIBLE = 10;
 
     /**
      * Used to count if the player should be visible
