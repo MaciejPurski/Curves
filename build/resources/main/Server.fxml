@@ -6,12 +6,12 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.controller.ServerController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.view.ServerController">
    <children>
       <HBox alignment="CENTER" layoutX="3.0" layoutY="271.0" prefHeight="25.0" prefWidth="594.0" spacing="50.0">
          <children>
-            <Button mnemonicParsing="false" onMouseClicked="#onStartPressed" prefHeight="25.0" prefWidth="137.0" text="Start" />
-            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#onStopPressed" prefHeight="25.0" prefWidth="137.0" text="Stop" />
+            <Button fx:id="start" mnemonicParsing="false" onMouseClicked="#onStartPressed" prefHeight="25.0" prefWidth="137.0" text="Start" />
+            <Button fx:id="stop" disable="true" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#onStopPressed" prefHeight="25.0" prefWidth="137.0" text="Stop" />
          </children>
       </HBox>
       <TextArea fx:id="textArea" cacheShape="false" centerShape="false" editable="false" focusTraversable="false" layoutX="33.0" layoutY="14.0" pickOnBounds="false" prefHeight="200.0" prefWidth="536.0" scaleShape="false" />

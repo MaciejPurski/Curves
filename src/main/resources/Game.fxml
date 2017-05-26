@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="736.0" prefWidth="1200.0" style="-fx-background-color: rgb(120,120,120);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.ClientController">
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="736.0" prefWidth="1200.0" style="-fx-background-color: rgb(120,120,120);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.ClientController">
    <children>
       <VBox fx:id="playersList" layoutX="817.0" layoutY="8.0" prefHeight="600.0" prefWidth="311.0" AnchorPane.topAnchor="60.0">
          <children>
@@ -81,7 +81,7 @@
          </padding>
       </VBox>
       <Button fx:id="join" focusTraversable="false" layoutX="825.0" layoutY="660.0" mnemonicParsing="false" onMouseClicked="#onJoinClick" prefHeight="55.0" prefWidth="132.0" text="Join" />
-      <Button fx:id="Abandon" focusTraversable="false" layoutX="993.0" layoutY="660.0" mnemonicParsing="false" onMouseClicked="#onAbandonClick" prefHeight="55.0" prefWidth="132.0" text="Abandon" />
+      <Button fx:id="abandon" disable="true" focusTraversable="false" layoutX="993.0" layoutY="660.0" mnemonicParsing="false" onMouseClicked="#onAbandonClick" prefHeight="55.0" prefWidth="132.0" text="Abandon" />
       <Label fx:id="text11" layoutX="859.0" prefHeight="55.0" prefWidth="268.0" text="Players" textFill="WHITE">
          <font>
             <Font name="FreeMono Bold" size="30.0" />

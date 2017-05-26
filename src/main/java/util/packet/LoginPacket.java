@@ -11,7 +11,6 @@ public class LoginPacket extends Packet {
         parse(playerName);
     }
 
-
     public String toString() {
         return "L " + playerName;
     }

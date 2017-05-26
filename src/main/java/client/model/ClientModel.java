@@ -35,8 +35,10 @@ public class ClientModel {
      * Function used when starting new game
      */
     public void initPlayers() {
-        for (Player it : players)
-            it.init(it.getX(), it.getY());
+        for (Player it : players) {
+            if(it.isInPlay())       // it should be initiated
+                it.init(it.getX(), it.getY());
+        }
     }
 
     /**

@@ -83,6 +83,7 @@ public class ServerSock implements Runnable {
             buf = message.getBytes();
             DatagramPacket packet = new DatagramPacket(buf, message.length(), group, 9877);
             socket.send(packet);
+            System.out.println(message);
         } catch (IOException e) {
             e.printStackTrace();
         }
