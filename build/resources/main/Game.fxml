@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="736.0" prefWidth="1200.0" style="-fx-background-color: rgb(120,120,120);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.ClientController">
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="736.0" prefWidth="1200.0" style="-fx-background-color: rgb(120,120,120);" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.Controller.ClientController">
    <children>
       <VBox fx:id="playersList" layoutX="817.0" layoutY="8.0" prefHeight="600.0" prefWidth="311.0" AnchorPane.topAnchor="60.0">
          <children>
