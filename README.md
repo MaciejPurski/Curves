@@ -12,7 +12,7 @@ My basic clone of the famous CurveFever. It allows playing for up to 6 players. 
 ### Building procedure
 1. Build the project using 'gradle build' command
 2. Go to gradle build directory 'cd build/libs'
-3. Run either server or client:
+3. Run either server or client: 
 Server by typing `java -jar Curves-1.0.jar server port_number`.
 Client by typing `java -jar Curves-1.0.jar client port_number`.
 Port_number can be any free udp port apart from 9877
@@ -22,9 +22,9 @@ Port_number can be any free udp port apart from 9877
 ### Server
 1. Using the slider choose desired number of players
 2. Start the server by pressing 'start'. Anything else goes on automatically
-⋅⋅1. Server waits for players to log in.
-⋅⋅2. As soon as the desired number of players is logged, server starts the game. One signle round finishes when all the players are out of the game.
-⋅⋅3. New round is automatically started
+⋅* Server waits for players to log in.
+⋅* As soon as the desired number of players is logged, server starts the game. One signle round finishes when all the players are out of the game.
+⋅* New round is automatically started
 User can stop the game at any moment by pressing "stop". All the players listening to server are informed about that fact and the game stops. It can be then restarted, but the connection must be established again. The game also stops when all the players leaves the game. 
 
   
