@@ -2,7 +2,7 @@ apply plugin: 'idea'
 apply plugin: 'java'
 
 archivesBaseName = "Curves"
-version = '1.0-FINAL'
+version = '1.0'
 
 
 apply plugin: "java"
@@ -19,7 +19,7 @@ jar {
 
   manifest {
     attributes(
-      'Main-Class': 'client.ClientApp'
+      'Main-Class': 'App'
     )
   }
 }

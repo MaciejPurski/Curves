@@ -1,9 +1,10 @@
 package client.view;
 
 
-import client.controller.Controller;
+import client.controller.GameController;
 import client.model.ClientModel;
 import javafx.scene.control.Button;
+import util.Controller;
 import util.Player;
 import util.Turn;
 import javafx.fxml.FXML;
@@ -26,11 +27,12 @@ import javafx.stage.Stage;
 
 
 import java.io.*;
+import java.util.List;
 
 
-public class ClientController {
+public class ClientController implements Controller{
 
-    private Controller controller;
+    private GameController gameController;
     private int drawCounter;
     private boolean isPressedRight;
     private boolean isPressedLeft;
@@ -38,31 +40,31 @@ public class ClientController {
     @FXML
     private Canvas map;
     @FXML
-    private Label text1, text2, text3, text4, text5, text6;
+    private List<Label> textList;
     @FXML
-    private Circle circle1, circle2, circle3, circle4, circle5, circle6;
+    private List<Circle> circleList;
     @FXML
     private Button join, abandon;
 
     public ClientController() throws IOException {
-        controller = new Controller(this);
+        gameController = new GameController(this);
     }
 
     @FXML
     public void onKeyPressed(KeyEvent event) {
-        if (!controller.isConnected())
+        if (!gameController.isConnected())
             return;
 
         switch (event.getCode()) {
             case LEFT:
                 if (!isPressedLeft && !isPressedRight) {
-                    controller.send(Turn.LEFT);
+                    gameController.send(Turn.LEFT);
                     isPressedLeft = true;
                 }
                 break;
             case RIGHT:
                 if (!isPressedRight && !isPressedLeft) {
-                    controller.send(Turn.RIGHT);
+                    gameController.send(Turn.RIGHT);
                     isPressedRight = true;
                 }
                 break;
@@ -73,12 +75,12 @@ public class ClientController {
 
     @FXML
     public void onKeyReleased() {
-        if (!controller.isConnected())
+        if (!gameController.isConnected())
             return;
         isPressedRight = false;
         isPressedLeft = false;
 
-        controller.send(Turn.NONE);
+        gameController.send(Turn.NONE);
     }
 
     /**
@@ -92,16 +94,15 @@ public class ClientController {
             // set what to do when window is closed
             Stage stage = new Stage();
             ((Node) event.getSource()).getScene().getWindow().setOnCloseRequest(e -> {
-                //TODO set exit packet
-                if (!controller.isConnected())
+                if (!gameController.isConnected())
                     System.exit(0);
-                controller.exitGame();
+                gameController.exitGame();
             });
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
             Parent root = (Parent) loader.load();
             LoginController login = loader.getController();
-            login.init(this, controller);
+            login.init(this, gameController);
             stage.setScene(new Scene(root));
             stage.setTitle("Login");
             stage.initModality(Modality.WINDOW_MODAL);
@@ -117,7 +118,7 @@ public class ClientController {
     void onAbandonClick() {
         join.setDisable(true);
         abandon.setDisable(false);
-        controller.exitGame();
+        gameController.exitGame();
     }
 
 
@@ -181,38 +182,9 @@ public class ClientController {
 
     void showPlayers(ClientModel model) {
         for (int i = 0; i < model.getPlayers().size(); i++) {
-            switch (i) {
-                case 0:
-                    text1.setText(model.getPlayers().get(i).getName());
-                    circle1.setFill(model.getPlayers().get(i).getColor().toColor());
-                    circle1.setVisible(true);
-                    break;
-                case 1:
-                    text2.setText(model.getPlayers().get(i).getName());
-                    circle2.setFill(model.getPlayers().get(i).getColor().toColor());
-                    circle2.setVisible(true);
-                    break;
-                case 2:
-                    text3.setText(model.getPlayers().get(i).getName());
-                    circle3.setFill(model.getPlayers().get(i).getColor().toColor());
-                    circle3.setVisible(true);
-                    break;
-                case 3:
-                    text4.setText(model.getPlayers().get(i).getName());
-                    circle4.setFill(model.getPlayers().get(i).getColor().toColor());
-                    circle4.setVisible(true);
-                    break;
-                case 4:
-                    text5.setText(model.getPlayers().get(i).getName());
-                    circle5.setFill(model.getPlayers().get(i).getColor().toColor());
-                    circle5.setVisible(true);
-                    break;
-                case 5:
-                    text6.setText(model.getPlayers().get(i).getName());
-                    circle6.setFill(model.getPlayers().get(i).getColor().toColor());
-                    circle6.setVisible(true);
-                    break;
-            }
+            textList.get(i).setText(model.getPlayers().get(i).getName());
+            circleList.get(i).setFill(model.getPlayers().get(i).getColor().toColor());
+            circleList.get(i).setVisible(true);
         }
     }
 
@@ -247,5 +219,8 @@ public class ClientController {
         abandon.setDisable(true);
     }
 
+    public void setPort(int port) {
+        gameController.getSocket().setClientPort(port);
+    }
 
 }

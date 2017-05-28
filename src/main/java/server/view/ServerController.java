@@ -1,19 +1,19 @@
 package server.view;
 
 import javafx.scene.control.Button;
-import server.controller.Controller;
+import server.controller.GameController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
+import util.Controller;
 
 
-public class ServerController {
+public class ServerController implements Controller {
 
-
-    private Controller controller;
+    private GameController gameController;
     @FXML
     private TextArea textArea;
     @FXML
@@ -23,7 +23,7 @@ public class ServerController {
 
 
     public ServerController() {
-        controller = new Controller(this);
+        gameController = new GameController(this);
     }
 
     @FXML
@@ -34,25 +34,25 @@ public class ServerController {
 
         // stop the game when stop is pressed
         ((Node) event.getSource()).getScene().getWindow().setOnCloseRequest(e -> {
-            if (!controller.isConnected())
+            if (!gameController.isConnected())
                 System.exit(0);
 
-            controller.setGameStop();
+            gameController.setGameStop();
         });
 
         //read users number from the slider
         int nPlayers = (int) slider.getValue();
-        controller.setNPlayers(nPlayers);
+        gameController.setNPlayers(nPlayers);
 
         textArea.appendText("Game initialized with " + nPlayers + " players. Waiting for players to log in...\n");
-        new Thread(() -> controller.initConnection()).start();
+        new Thread(() -> gameController.initConnection()).start();
     }
 
     @FXML
     void onStopPressed() {
         start.setDisable(false);
         stop.setDisable(true);
-        controller.setGameStop();
+        gameController.setGameStop();
     }
 
     /**
@@ -71,6 +71,10 @@ public class ServerController {
     public void allowStart() {
         start.setDisable(false);
         stop.setDisable(true);
+    }
+
+    public void setPort(int port) {
+        gameController.getSocket().setServerPort(port);
     }
 
 }

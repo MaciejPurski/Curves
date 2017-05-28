@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class Controller implements Runnable {
+public class GameController implements Runnable {
     private int nPlayers;
     private Thread gameThread;
     private Thread serverThread;
@@ -29,7 +29,7 @@ public class Controller implements Runnable {
     private boolean isConnected;
     private ServerController view;
 
-    public Controller(ServerController view) {
+    public GameController(ServerController view) {
         this.view = view;
         socket = new ServerSock();
         model = new Model();

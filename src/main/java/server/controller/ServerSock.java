@@ -4,11 +4,11 @@ import util.packet.IndexPacket;
 import util.packet.LoginPacket;
 import util.packet.Packet;
 import util.packet.ServerStopPacket;
-import util.SynchronizedQueue;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Class responsible for server connection with the clients.
@@ -16,10 +16,10 @@ import java.util.*;
  */
 public class ServerSock implements Runnable {
 
-    private final int serverPort = 9876;
     private final String groupAddress = "224.0.0.3";
 
-    private SynchronizedQueue queue;
+    private int serverPort;
+    private LinkedBlockingQueue<Packet> queue;
     private DatagramSocket socket;
     private InetAddress group;
     private int nUsers;
@@ -27,8 +27,7 @@ public class ServerSock implements Runnable {
     ServerSock() {
         try {
             group = InetAddress.getByName(groupAddress);
-            queue = new SynchronizedQueue();
-            socket = new DatagramSocket(serverPort);
+            queue = new LinkedBlockingQueue<> ();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -45,7 +44,13 @@ public class ServerSock implements Runnable {
                 break;
             }
             Packet received = receive();
-            queue.put(received);
+            try {
+                if(received!=null)
+                    queue.put(received);
+            }
+            catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -83,7 +88,6 @@ public class ServerSock implements Runnable {
             buf = message.getBytes();
             DatagramPacket packet = new DatagramPacket(buf, message.length(), group, 9877);
             socket.send(packet);
-            System.out.println(message);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,7 +108,9 @@ public class ServerSock implements Runnable {
      * @return all packets which should be proceeded
      */
     ArrayList<Packet> getPackets() {
-        return queue.getPackets();
+        ArrayList<Packet> packets = new ArrayList<> ();
+        queue.drainTo(packets);
+        return packets;
     }
 
     private Packet receive() {
@@ -127,13 +133,22 @@ public class ServerSock implements Runnable {
     void sendStopPacket() {
         try {
             InetAddress address = InetAddress.getByName("localhost");
-            int port = 9876;
             byte[] buf = new byte[256];
 
-            DatagramPacket packet = new DatagramPacket(buf, 1, address, port);
+            DatagramPacket packet = new DatagramPacket(buf, 1, address, serverPort);
             socket.send(packet);
 
         } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void setServerPort(int port) {
+        serverPort = port;
+        try {
+            socket = new DatagramSocket(serverPort);
+        }
+        catch (SocketException ex) {
             ex.printStackTrace();
         }
     }

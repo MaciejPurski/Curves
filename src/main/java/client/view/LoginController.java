@@ -1,6 +1,6 @@
 package client.view;
 
-import client.controller.Controller;
+import client.controller.GameController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,7 +18,7 @@ public class LoginController {
     @FXML
     private TextField port, name, ipAddress;
 
-    private Controller controller;
+    private GameController gameController;
     private ClientController view;
     @FXML
     private Label label;
@@ -51,26 +51,25 @@ public class LoginController {
         label.setText("Waiting for server response");
 
         //establish connection
-
         new Thread(() -> {
             try {
-                int index = controller.getSocket().connect(ipAddress.getText(), Integer.parseInt(port.getText()), name.getText());
-                controller.setPlayer(index);
+                int index = gameController.getSocket().connect(ipAddress.getText(), Integer.parseInt(port.getText()), name.getText());
+                gameController.setPlayer(index);
 
                 Platform.runLater(() -> label.setText("Connected.\n Waiting for other players..."));
-                controller.fillUsersList();
+                gameController.fillUsersList();
 
                 Stage dialog = (Stage) ((Node) event.getTarget()).getScene().getWindow();
                 Platform.runLater(() -> {
                             view.initMap();
-                            view.showPlayers(controller.getModel());
+                            view.showPlayers(gameController.getModel());
                             dialog.close();
                         }
                 );
                 view.allowAbandon();
-                controller.startGame();
+                gameController.startGame();
             } catch (SocketTimeoutException exS) {
-                controller.getSocket().leave();
+                gameController.getSocket().leave();
                 Platform.runLater(() -> label.setText("Connection timeout. \nserver unreachable"));
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -85,11 +84,11 @@ public class LoginController {
      * Used to pass arguments from other controller
      *
      * @param view
-     * @param controller
+     * @param gameController
      */
-    public void init(ClientController view, Controller controller) {
+    public void init(ClientController view, GameController gameController) {
         this.view = view;
-        this.controller = controller;
+        this.gameController = gameController;
     }
 
     /**
@@ -103,7 +102,6 @@ public class LoginController {
         String[] tab;
 
         tab = address.split("\\.");
-        System.out.println(tab.length);
         if (tab.length != 4)
             return false;
 

@@ -9,18 +9,16 @@ import util.packet.*;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 
-public class Controller implements Runnable {
+public class GameController implements Runnable {
 
     private ClientController view;
     private int playerIndex;
     private ClientSocket socket;
     private ClientModel model;
-
-
     private boolean isConnected;
     private Thread gameThread;
 
-    public Controller(ClientController view) throws IOException{
+    public GameController(ClientController view) throws IOException{
         this.view = view;
         socket = new ClientSocket();
         model = new ClientModel();

@@ -16,10 +16,10 @@ public class ClientSocket {
     private InetAddress serverAddress;
     InetAddress groupAddres;
     private int serverPort;
+    private int clientPort;
 
 
     public ClientSocket() throws IOException {
-        socket = new DatagramSocket(9878);
         multicast = new MulticastSocket(9877);
         groupAddres = InetAddress.getByName("224.0.0.3");
     }
@@ -108,6 +108,16 @@ public class ClientSocket {
             multicast.leaveGroup(groupAddres);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void setClientPort(int port) {
+        clientPort = port;
+        try {
+            socket = new DatagramSocket(clientPort);
+        }
+        catch (SocketException ex) {
+            ex.printStackTrace();
         }
     }
 
