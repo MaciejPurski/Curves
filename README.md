@@ -27,6 +27,13 @@ My basic clone of the famous CurveFever. It allows playing for up to 6 players. 
 ⋅⋅2. As soon as the desired number of players is logged, server starts the game. One signle round finishes when all the players are out of the game.
 ⋅⋅3. New round is automatically started
 User can stop the game at any moment by pressing "stop". All the players listening to server are informed about that fact and the game stops. It can be then restarted, but the connection must be established again. The game also stops when all the players leaves the game. 
+
+1. First ordered list item
+2. Another item
+⋅⋅* Unordered sub-list. 
+1. Actual numbers don't matter, just that it's a number
+⋅⋅1. Ordered sub-list
+4. And another item.
   
 
 ### Client
