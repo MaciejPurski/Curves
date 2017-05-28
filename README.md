@@ -1,6 +1,5 @@
 # Curves
 
-<<<<<<< HEAD
 ## Description
 My basic clone of the famous CurveFever. It allows playing for up to 6 players. It was my first Java project done for academic purpose for Warsaw University of Technology. Program uses udp multicasting. It works with no problems on Linux, but sometimes is blocked on Windows due to some security issues.
 
@@ -29,12 +28,12 @@ My basic clone of the famous CurveFever. It allows playing for up to 6 players. 
 User can stop the game at any moment by pressing "stop". All the players listening to server are informed about that fact and the game stops. It can be then restarted, but the connection must be established again. The game also stops when all the players leaves the game. 
   
 
-###Client
+### Client
 1. Connection can be established by clicking "Join" button.
 ..* Program accepts ip address only in "0.0.0.0" format. 
 ..* If the server is unreachable a suitable message is shown in the dialog. 
 ..* If server responds, information "waiting for other players" appears until the game starts. 
 2. During the game any player can leave at any moment and the server will be informed about the fact. Leaving is possible by clicking "abbandon" or closing the window.
 3. Move your curve by pressing LEFT_ARROW and RIGHT_ARROW
->>>>>>> a3c388d5ea743110a8ebc9d59617b76708b17fa2
+
 
