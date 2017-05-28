@@ -13,8 +13,8 @@ My basic clone of the famous CurveFever. It allows playing for up to 6 players. 
 1. Build the project using 'gradle build' command
 2. Go to gradle build directory 'cd build/libs'
 3. Run either server or client:
-....* Server by typing 'java -jar Curves-1.0.jar server port_number' 
-....* Client by typing 'java -jar Curves-1.0.jar client port_number'
+....* Server by typing '''java -jar Curves-1.0.jar server port_number'''
+....* Client by typing '''java -jar Curves-1.0.jar client port_number'''
 .... port_number can be any free udp port apart from 9877
 
 ## Game
